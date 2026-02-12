@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background -->
+  <rect width="200" height="200" rx="30" ry="30" fill="#d10000"></rect>
+
+  <!-- Text -->
+  <text x="50%" y="55%" font-family="Arial, Helvetica, sans-serif" font-size="80" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">
+    RP
+  </text>
+</svg>
