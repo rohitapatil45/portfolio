@@ -9,7 +9,7 @@ export const personalInfo = {
   email: "rohit.a.patil214@gmail.com",
   phone: "+91 7498817455",
   location: "Pune, India",
-  linkedIn: "https://linkedin.com/in/rohit-patil213",
+  linkedIn: "https://linkedin.com/in/rohit-patil214",
   github: "https://github.com/rohitpatil45",
   resumeUrl: cv,
   profileImage: myImage,
