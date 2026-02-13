@@ -273,7 +273,7 @@ const Hero = () => {
                   whileHover={{ y: 0 }}
                   transition={{ duration: 0.3 }}
                 />
-                <span className="relative z-10 group-hover:text-black transition-colors duration-300 flex items-center gap-2">
+                <span className="relative z-10 group-hover:text-blue transition-colors duration-300 flex items-center gap-2">
                   <Download size={20} />
                   Download Resume
                 </span>
