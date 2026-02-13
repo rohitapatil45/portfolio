@@ -1,3 +1,531 @@
+// import React, { useState, useRef } from 'react';
+// import { motion, useScroll, useTransform } from 'framer-motion';
+// import { useInView } from 'react-intersection-observer';
+// import { projects } from '../data/mockData';
+// import { ExternalLink, Github, Rocket, Code2, Zap, Star, Sparkles } from 'lucide-react';
+
+// const Projects = () => {
+//   const [ref, inView] = useInView({
+//     triggerOnce: true,
+//     threshold: 0.05,
+//   });
+
+//   const [hoveredIndex, setHoveredIndex] = useState(null);
+
+//   return (
+//     <section
+//       id="projects"
+//       className="py-32 bg-[#0a0a0a] relative overflow-hidden"
+//     >
+//       {/* Animated Background */}
+//       <div className="absolute inset-0">
+//         <motion.div
+//           animate={{
+//             background: [
+//               'radial-gradient(circle at 20% 30%, rgba(220, 20, 60, 0.15) 0%, transparent 50%)',
+//               'radial-gradient(circle at 80% 70%, rgba(220, 20, 60, 0.15) 0%, transparent 50%)',
+//               'radial-gradient(circle at 20% 30%, rgba(220, 20, 60, 0.15) 0%, transparent 50%)',
+//             ],
+//           }}
+//           transition={{ duration: 10, repeat: Infinity }}
+//           className="absolute inset-0"
+//         />
+        
+//         {/* Floating orbs */}
+//         {[...Array(3)].map((_, i) => (
+//           <motion.div
+//             key={i}
+//             className="absolute w-64 h-64 bg-[#DC143C] rounded-full blur-3xl opacity-10"
+//             animate={{
+//               y: [0, -50, 0],
+//               x: [0, 30, 0],
+//             }}
+//             transition={{
+//               duration: 8 + i * 2,
+//               repeat: Infinity,
+//               ease: 'easeInOut',
+//             }}
+//             style={{
+//               top: `${20 + i * 30}%`,
+//               left: `${10 + i * 30}%`,
+//             }}
+//           />
+//         ))}
+//       </div>
+
+//       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+//         {/* Animated Header */}
+//         <motion.div
+//           initial={{ opacity: 0, y: 30 }}
+//           animate={inView ? { opacity: 1, y: 0 } : {}}
+//           transition={{ duration: 0.6 }}
+//           className="text-center mb-20"
+//         >
+//           {/* Badge with animation */}
+//           <motion.div
+//             initial={{ opacity: 0, scale: 0, rotate: -180 }}
+//             animate={inView ? { opacity: 1, scale: 1, rotate: 0 } : {}}
+//             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+//             className="inline-flex items-center gap-2 px-4 py-2 bg-[#DC143C]/10 border border-[#DC143C]/30 rounded-full mb-6 relative"
+//           >
+//             <motion.div
+//               animate={{ rotate: 360 }}
+//               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+//             >
+//               <Rocket className="text-[#DC143C]" size={18} />
+//             </motion.div>
+//             <span className="text-[#DC143C] text-sm font-bold tracking-wider">
+//               PORTFOLIO
+//             </span>
+            
+//             {/* Pulsing glow */}
+//             <motion.div
+//               className="absolute inset-0 rounded-full bg-[#DC143C]/20"
+//               animate={{
+//                 scale: [1, 1.5, 1],
+//                 opacity: [0.5, 0, 0.5],
+//               }}
+//               transition={{ duration: 2, repeat: Infinity }}
+//             />
+//           </motion.div>
+
+//           {/* Animated Title */}
+//           <motion.h2
+//             className="text-5xl sm:text-7xl font-bold mb-6"
+//             style={{ fontFamily: "'Playfair Display', serif" }}
+//           >
+//             <motion.span 
+//               className="text-white inline-block"
+//               initial={{ opacity: 0, y: 50 }}
+//               animate={inView ? { opacity: 1, y: 0 } : {}}
+//               transition={{ delay: 0.3, duration: 0.6 }}
+//             >
+//               Featured{' '}
+//             </motion.span>
+//             <motion.span 
+//               className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC143C] to-[#FF1744] inline-block relative"
+//               initial={{ opacity: 0, y: 50 }}
+//               animate={inView ? { opacity: 1, y: 0 } : {}}
+//               transition={{ delay: 0.4, duration: 0.6 }}
+//             >
+//               Projects
+//               {/* Animated sparkle */}
+//               <motion.div
+//                 className="absolute -top-6 -right-8"
+//                 animate={{
+//                   rotate: [0, 360],
+//                   scale: [1, 1.2, 1],
+//                 }}
+//                 transition={{ duration: 3, repeat: Infinity }}
+//               >
+//                 <Sparkles className="text-[#DC143C]" size={24} />
+//               </motion.div>
+//             </motion.span>
+//           </motion.h2>
+
+//           {/* Animated underline */}
+//           <motion.div
+//             initial={{ scaleX: 0 }}
+//             animate={inView ? { scaleX: 1 } : {}}
+//             transition={{ delay: 0.5, duration: 0.8 }}
+//             className="w-32 h-1 bg-gradient-to-r from-[#DC143C] to-[#FF1744] mx-auto rounded-full mb-6"
+//             style={{
+//               boxShadow: '0 0 20px rgba(220, 20, 60, 0.5)',
+//             }}
+//           />
+
+//           <motion.p
+//             initial={{ opacity: 0 }}
+//             animate={inView ? { opacity: 1 } : {}}
+//             transition={{ delay: 0.6 }}
+//             className="text-gray-400 text-lg max-w-2xl mx-auto"
+//           >
+//             Real-world applications showcasing my skills and problem-solving abilities
+//           </motion.p>
+//         </motion.div>
+
+//         {/* Projects Grid with Stagger Animation */}
+//         <div className="space-y-32">
+//           {projects.map((project, index) => (
+//             <ProjectShowcase
+//               key={project.title}
+//               project={project}
+//               index={index}
+//               inView={inView}
+//               isHovered={hoveredIndex === index}
+//               onHover={() => setHoveredIndex(index)}
+//               onLeave={() => setHoveredIndex(null)}
+//             />
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+// // Enhanced Project Showcase with Parallax and 3D
+// const ProjectShowcase = ({ project, index, inView, isHovered, onHover, onLeave }) => {
+//   const isEven = index % 2 === 0;
+//   const sectionRef = useRef(null);
+  
+//   const { scrollYProgress } = useScroll({
+//     target: sectionRef,
+//     offset: ['start end', 'end start'],
+//   });
+
+//   // Parallax effects
+//   const imageY = useTransform(scrollYProgress, [0, 1], [50, -50]);
+//   const contentY = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+//   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0.5]);
+
+//   return (
+//     <motion.div
+//       ref={sectionRef}
+//       initial={{ opacity: 0 }}
+//       animate={inView ? { opacity: 1 } : {}}
+//       style={{ opacity }}
+//       onMouseEnter={onHover}
+//       onMouseLeave={onLeave}
+//       className={`grid grid-cols-1 lg:grid-cols-12 gap-8 items-center ${
+//         isEven ? '' : 'lg:grid-flow-dense'
+//       }`}
+//     >
+//       {/* Animated Project Image with 3D Transform */}
+//       <motion.div
+//         className={`lg:col-span-7 ${isEven ? '' : 'lg:col-start-6'}`}
+//         style={{ y: imageY }}
+//         initial={{ opacity: 0, x: isEven ? -100 : 100, rotateY: isEven ? -30 : 30 }}
+//         animate={inView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
+//         transition={{ duration: 0.8, delay: index * 0.2 }}
+//       >
+//         <div className="relative group perspective-1000">
+//           {/* Animated glowing border */}
+//           <motion.div
+//             className="absolute -inset-1 rounded-3xl opacity-75 blur-lg"
+//             style={{
+//               background: 'linear-gradient(90deg, #DC143C, #FF1744, #DC143C)',
+//               backgroundSize: '200% 200%',
+//             }}
+//             animate={{
+//               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+//               opacity: isHovered ? 1 : 0.5,
+//             }}
+//             transition={{
+//               backgroundPosition: {
+//                 duration: 3,
+//                 repeat: Infinity,
+//               },
+//               opacity: {
+//                 duration: 0.3,
+//               },
+//             }}
+//           />
+
+//           <motion.div 
+//             className="relative overflow-hidden rounded-3xl"
+//             whileHover={{ 
+//               scale: 1.02,
+//               rotateY: isEven ? 5 : -5,
+//               rotateX: 3,
+//             }}
+//             transition={{ duration: 0.4 }}
+//           >
+//             {/* Image with parallax */}
+//             <motion.img
+//               src={project.image}
+//               alt={project.title}
+//               className="w-full h-[400px] lg:h-[500px] object-cover rounded-3xl relative z-10"
+//               style={{
+//                 y: useTransform(scrollYProgress, [0, 1], [0, -20]),
+//               }}
+//               animate={{
+//                 scale: isHovered ? 1.05 : 1,
+//               }}
+//               transition={{ duration: 0.4 }}
+//             />
+
+//             {/* Gradient Overlay with animation */}
+//             <motion.div 
+//               className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-3xl z-20"
+//               animate={{
+//                 opacity: isHovered ? 0.7 : 0.9,
+//               }}
+//             />
+
+//             {/* Animated Project Number Badge */}
+//             <motion.div
+//               className="absolute top-6 left-6 z-30"
+//               initial={{ scale: 0, rotate: -180 }}
+//               animate={inView ? { scale: 1, rotate: 0 } : {}}
+//               transition={{ delay: 0.5 + index * 0.2, type: 'spring', bounce: 0.6 }}
+//               whileHover={{ scale: 1.1, rotate: 360 }}
+//             >
+//               <div className="bg-[#DC143C] px-6 py-3 rounded-2xl shadow-2xl relative overflow-hidden">
+//                 <span className="text-white font-bold text-xl relative z-10">
+//                   PROJECT {String(index + 1).padStart(2, '0')}
+//                 </span>
+//                 {/* Shimmer effect */}
+//                 <motion.div
+//                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+//                   animate={{
+//                     x: ['-100%', '200%'],
+//                   }}
+//                   transition={{
+//                     duration: 2,
+//                     repeat: Infinity,
+//                   }}
+//                 />
+//               </div>
+//             </motion.div>
+
+//             {/* Animated Action Buttons */}
+//             <motion.div 
+//               className="absolute top-6 right-6 flex gap-3 z-30"
+//               initial={{ opacity: 0, x: 50 }}
+//               animate={inView ? { opacity: 1, x: 0 } : {}}
+//               transition={{ delay: 0.6 + index * 0.2 }}
+//             >
+//               <ActionButton
+//                 href={project.githubLink}
+//                 icon={<Github size={24} />}
+//                 delay={0}
+//               />
+//               <ActionButton
+//                 href={project.demoLink}
+//                 icon={<ExternalLink size={24} />}
+//                 delay={0.1}
+//               />
+//             </motion.div>
+
+//             {/* Hover particles */}
+//             {isHovered && (
+//               <>
+//                 {[...Array(8)].map((_, i) => (
+//                   <motion.div
+//                     key={i}
+//                     className="absolute w-2 h-2 bg-[#DC143C] rounded-full z-25"
+//                     style={{
+//                       top: `${Math.random() * 100}%`,
+//                       left: `${Math.random() * 100}%`,
+//                     }}
+//                     animate={{
+//                       y: [0, -50, -100],
+//                       opacity: [1, 0.5, 0],
+//                       scale: [0, 1.5, 0],
+//                     }}
+//                     transition={{
+//                       duration: 2,
+//                       repeat: Infinity,
+//                       delay: i * 0.2,
+//                     }}
+//                   />
+//                 ))}
+//               </>
+//             )}
+//           </motion.div>
+//         </div>
+//       </motion.div>
+
+//       {/* Animated Project Details */}
+//       <motion.div 
+//         className={`lg:col-span-5 space-y-6 ${isEven ? '' : 'lg:col-start-1 lg:row-start-1'}`}
+//         style={{ y: contentY }}
+//       >
+//         {/* Category Tag */}
+//         <motion.div
+//           initial={{ opacity: 0, x: isEven ? 50 : -50 }}
+//           animate={inView ? { opacity: 1, x: 0 } : {}}
+//           transition={{ delay: 0.3 + index * 0.2 }}
+//           className="flex items-center gap-3"
+//         >
+//           <motion.div
+//             animate={{ rotate: 360 }}
+//             transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+//           >
+//             <Code2 className="text-[#DC143C]" size={24} />
+//           </motion.div>
+//           <span className="text-[#DC143C] font-bold text-sm tracking-wider">
+//             FULL STACK PROJECT
+//           </span>
+//         </motion.div>
+
+//         {/* Animated Title */}
+//         <motion.h3
+//           initial={{ opacity: 0, x: isEven ? 50 : -50 }}
+//           animate={inView ? { opacity: 1, x: 0 } : {}}
+//           transition={{ delay: 0.4 + index * 0.2, type: 'spring' }}
+//           className="text-4xl sm:text-5xl font-bold text-white leading-tight"
+//           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+//         >
+//           {project.title.split(' ').map((word, i) => (
+//             <motion.span
+//               key={i}
+//               className="inline-block mr-3"
+//               initial={{ opacity: 0, y: 20 }}
+//               animate={inView ? { opacity: 1, y: 0 } : {}}
+//               transition={{ delay: 0.5 + index * 0.2 + i * 0.1 }}
+//               whileHover={{ 
+//                 y: -5, 
+//                 color: '#DC143C',
+//                 transition: { duration: 0.2 }
+//               }}
+//             >
+//               {word}
+//             </motion.span>
+//           ))}
+//         </motion.h3>
+
+//         {/* Description with fade in */}
+//         <motion.p
+//           initial={{ opacity: 0, x: isEven ? 50 : -50 }}
+//           animate={inView ? { opacity: 1, x: 0 } : {}}
+//           transition={{ delay: 0.5 + index * 0.2 }}
+//           className="text-gray-400 text-lg leading-relaxed"
+//         >
+//           {project.description}
+//         </motion.p>
+
+//         {/* Animated Tech Stack */}
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={inView ? { opacity: 1, y: 0 } : {}}
+//           transition={{ delay: 0.6 + index * 0.2 }}
+//           className="space-y-3"
+//         >
+//           <div className="flex items-center gap-2 text-white font-semibold">
+//             <Zap className="text-[#DC143C]" size={20} />
+//             Tech Stack
+//           </div>
+//           <div className="flex flex-wrap gap-2">
+//             {project.technologies.map((tech, i) => (
+//               <motion.span
+//                 key={tech}
+//                 initial={{ opacity: 0, scale: 0, rotate: -180 }}
+//                 animate={inView ? { opacity: 1, scale: 1, rotate: 0 } : {}}
+//                 transition={{ 
+//                   delay: 0.7 + index * 0.2 + i * 0.05,
+//                   type: 'spring',
+//                   stiffness: 200
+//                 }}
+//                 whileHover={{ 
+//                   scale: 1.15, 
+//                   y: -5,
+//                   boxShadow: '0 10px 25px rgba(220, 20, 60, 0.4)',
+//                 }}
+//                 className="px-4 py-2 bg-[#1a1a1a] text-[#DC143C] rounded-xl text-sm font-bold border border-[#DC143C]/30 hover:border-[#DC143C] transition-all cursor-pointer"
+//               >
+//                 {tech}
+//               </motion.span>
+//             ))}
+//           </div>
+//         </motion.div>
+
+//         {/* Animated Features */}
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={inView ? { opacity: 1, y: 0 } : {}}
+//           transition={{ delay: 0.7 + index * 0.2 }}
+//           className="space-y-3"
+//         >
+//           <div className="flex items-center gap-2 text-white font-semibold">
+//             <Star className="text-[#DC143C]" size={20} />
+//             Key Features
+//           </div>
+//           <ul className="space-y-2">
+//             {project.features.map((feature, i) => (
+//               <motion.li
+//                 key={i}
+//                 initial={{ opacity: 0, x: -20 }}
+//                 animate={inView ? { opacity: 1, x: 0 } : {}}
+//                 transition={{ delay: 0.8 + index * 0.2 + i * 0.1 }}
+//                 whileHover={{ x: 10 }}
+//                 className="flex items-start gap-3 text-gray-400 group cursor-pointer"
+//               >
+//                 <motion.div
+//                   className="w-2 h-2 bg-[#DC143C] rounded-full mt-2 flex-shrink-0"
+//                   whileHover={{ scale: 2 }}
+//                 />
+//                 <span className="leading-relaxed group-hover:text-white transition-colors">
+//                   {feature}
+//                 </span>
+//               </motion.li>
+//             ))}
+//           </ul>
+//         </motion.div>
+
+//         {/* Animated CTA Buttons */}
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={inView ? { opacity: 1, y: 0 } : {}}
+//           transition={{ delay: 0.9 + index * 0.2 }}
+//           className="flex gap-4 pt-4"
+//         >
+//           <motion.a
+//             href={project.demoLink}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             whileHover={{ scale: 1.05, x: 5 }}
+//             whileTap={{ scale: 0.95 }}
+//             className="flex-1 px-6 py-4 bg-[#DC143C] text-white font-bold rounded-xl hover:bg-[#FF1744] transition-colors flex items-center justify-center gap-2 relative overflow-hidden group"
+//           >
+//             <motion.div
+//               className="absolute inset-0 bg-gradient-to-r from-[#FF1744] to-[#DC143C]"
+//               initial={{ x: '-100%' }}
+//               whileHover={{ x: 0 }}
+//               transition={{ duration: 0.3 }}
+//             />
+//             <ExternalLink size={20} className="relative z-10" />
+//             <span className="relative z-10">View Live Demo</span>
+//           </motion.a>
+//           <motion.a
+//             href={project.githubLink}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             whileHover={{ scale: 1.05, x: 5 }}
+//             whileTap={{ scale: 0.95 }}
+//             className="px-6 py-4 bg-[#1a1a1a] text-white font-bold rounded-xl border border-[#DC143C]/50 hover:border-[#DC143C] transition-all flex items-center justify-center gap-2"
+//           >
+//             <Github size={20} />
+//             Source Code
+//           </motion.a>
+//         </motion.div>
+//       </motion.div>
+//     </motion.div>
+//   );
+// };
+
+// // Animated Action Button
+// const ActionButton = ({ href, icon, delay }) => {
+//   return (
+//     <motion.a
+//       href={href}
+//       target="_blank"
+//       rel="noopener noreferrer"
+//       initial={{ scale: 0, rotate: -180 }}
+//       animate={{ scale: 1, rotate: 0 }}
+//       transition={{ delay, type: 'spring', stiffness: 200 }}
+//       whileHover={{ 
+//         scale: 1.2, 
+//         rotate: 360,
+//         boxShadow: '0 10px 30px rgba(220, 20, 60, 0.5)',
+//       }}
+//       whileTap={{ scale: 0.9 }}
+//       className="p-4 bg-black/70 backdrop-blur-md rounded-2xl text-white hover:bg-[#DC143C] transition-all border border-gray-700 hover:border-[#DC143C] relative overflow-hidden group"
+//     >
+//       <div className="relative z-10">{icon}</div>
+      
+//       {/* Shimmer effect */}
+//       <motion.div
+//         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+//         initial={{ x: '-100%' }}
+//         whileHover={{ x: '100%' }}
+//         transition={{ duration: 0.5 }}
+//       />
+//     </motion.a>
+//   );
+// };
+
+// export default Projects;
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';

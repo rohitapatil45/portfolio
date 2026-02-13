@@ -29,7 +29,7 @@ function App() {
   return (
       <div className="App">
      
-      {isLoading && <LoadingPage onLoadingComplete={handleLoadingComplete} />}
+      {isLoading && <CreativeLoadingPage onLoadingComplete={handleLoadingComplete} />}
       
   
       {!isLoading && <CustomCursor />}
