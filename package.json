@@ -12,7 +12,7 @@
     "axios": "^1.13.5",
     "framer-motion": "^12.34.0",
     "lucide-react": "^0.563.0",
-    "next": "15.2.4",
+    "next": "15.2.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
