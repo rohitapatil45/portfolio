@@ -1,6 +1,4 @@
 // Mock data for Rohit Patil's Portfolio
-import myImage from "../assets/my.jpeg";
-import cv from "../assets/cv.pdf";
 
 export const personalInfo = {
   name: "ROHIT PATIL",
@@ -11,8 +9,8 @@ export const personalInfo = {
   location: "Pune, India",
   linkedIn: "https://linkedin.com/in/rohit-patil214",
   github: "https://github.com/rohitpatil45",
-  resumeUrl: cv,
-  profileImage: myImage,
+  resumeUrl: "/Rohit_Patil_Resume.pdf",
+  profileImage: "/my.jpeg",
   about: "I'm a Full Stack Developer who transforms ideas into polished, interactive web experiences. From crafting smooth React interfaces to building robust backend APIs, I love every step of the development process. Whether I'm debugging complex issues, optimizing performance, or exploring the latest in TypeScript and modern frameworks—I'm driven by the challenge of creating applications that truly make an impact. Let's build something exceptional."
 };
 
@@ -33,7 +31,40 @@ export const skills = [
 
 export const projects = [
   {
-    id: 1,
+  id: 1,
+  title: "SportifyCampus - Event Management System",
+  description: "Smart sports event management platform used by college to handle registrations, scheduling, and event coordination efficiently.",
+  technologies: ["React", "Node.js", "Express", "MongoDB", "REST API"],
+  features: [
+    "Online event registration and management",
+    "Scheduling and dashboard system for organizers",
+    "Basic payment workflow integration",
+    "Real-world deployment in college environment"
+  ],
+image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80",
+  demoLink: "https://sportifycampus.vercel.app/",
+  githubLink: "https://github.com/rohitpatil45",
+  bgColor: "#1E90FF"
+},
+  {
+  id: 2,
+  title: "Reelief Foundation - NGO Website",
+  description: "Full-stack website built for a social impact NGO to improve digital presence, showcase initiatives, and increase user engagement.",
+  technologies: ["React", "Node.js", "CSS"],
+  features: [
+    "Responsive and accessible UI design",
+    "Structured pages for programs and initiatives",
+    "Optimized content layout for better engagement",
+    "AI-assisted UI development and iteration"
+  ],
+  image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80",
+  demoLink: "https://reelieffoundation.org/",
+  githubLink: "https://github.com/rohitpatil45",
+  bgColor: "#2E8B57"
+},
+
+{
+    id: 3,
     title: "SigmaGPT - AI Chat Application",
     description: "Custom AI chatbot using OpenAI APIs to generate context-aware responses with prompt handling and secure API calls.",
     technologies: ["React", "OpenAI API", "Node.js", "Express"],
@@ -44,12 +75,12 @@ export const projects = [
       "Async programming"
     ],
     image: "https://images.unsplash.com/photo-1645947091786-4399f228f5f0?w=1200&q=80",
-    demoLink: "#",
+    
     githubLink: "https://github.com/rohitpatil45",
     bgColor: "#DC143C"
   },
   {
-    id: 2,
+    id: 4,
     title: "Wanderllast - MERN Stack Platform",
     description: "Full-stack accommodation platform with authentication, listing CRUD operations, validation, and comprehensive error handling.",
     technologies: ["React", "Node.js", "Express", "MongoDB"],
@@ -60,26 +91,11 @@ export const projects = [
       "Clean architecture design"
     ],
     image: "https://images.unsplash.com/photo-1591439657848-9f4b9ce436b9?w=1200&q=80",
-    demoLink: "#",
+    
     githubLink: "https://github.com/rohitpatil45",
     bgColor: "#8B0000"
   },
-  {
-    id: 3,
-    title: "WeatherNow - Real-Time Forecasts",
-    description: "Real-time weather application with dynamic data rendering, location-based results, and responsive UI design.",
-    technologies: ["React", "Weather API", "CSS3", "JavaScript"],
-    features: [
-      "Real-time weather data",
-      "Location-based search",
-      "Responsive design",
-      "API error handling"
-    ],
-    image: "https://images.unsplash.com/photo-1566915896913-549d796d2166?w=1200&q=80",
-    demoLink: "#",
-    githubLink: "https://github.com/rohitpatil45",
-    bgColor: "#FF1744"
-  },
+
   {
     id: 4,
     title: "Restaurant Website",
@@ -92,7 +108,7 @@ export const projects = [
       "DOM manipulation"
     ],
     image: "https://images.unsplash.com/photo-1733412505442-36cfa59a4240?w=1200&q=80",
-    demoLink: "#",
+    
     githubLink: "https://github.com/rohitpatil45",
     bgColor: "#DC143C"
   }

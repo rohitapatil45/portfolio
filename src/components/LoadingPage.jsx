@@ -1,363 +1,197 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, Zap, Sparkles } from 'lucide-react';
+
+/* Static particle positions — computed once, never change */
+const PARTICLES = [
+  { x: 10, y: 80, d: '3.1s', delay: '0s' },
+  { x: 25, y: 20, d: '4.2s', delay: '0.4s' },
+  { x: 45, y: 65, d: '3.8s', delay: '0.8s' },
+  { x: 60, y: 35, d: '4.6s', delay: '1.2s' },
+  { x: 75, y: 75, d: '3.4s', delay: '0.3s' },
+  { x: 88, y: 15, d: '4.0s', delay: '0.7s' },
+  { x: 52, y: 90, d: '3.6s', delay: '1.0s' },
+  { x: 18, y: 45, d: '4.3s', delay: '1.5s' },
+];
+
+const STAGES = [
+  { progress: 20, text: 'Loading Assets' },
+  { progress: 40, text: 'Preparing Interface' },
+  { progress: 65, text: 'Setting Up Components' },
+  { progress: 85, text: 'Optimising Performance' },
+  { progress: 100, text: 'Almost Ready!' },
+];
+
+const TIPS = {
+  0: '✨ Crafting pixel-perfect designs…',
+  40: '🚀 Optimising for blazing speed…',
+  70: '🎨 Adding the finishing touches…',
+  96: '🎉 Ready to impress!',
+};
+const getTip = (p) => {
+  if (p >= 96) return TIPS[96];
+  if (p >= 70) return TIPS[70];
+  if (p >= 40) return TIPS[40];
+  return TIPS[0];
+};
 
 const LoadingPage = ({ onLoadingComplete }) => {
-  const [progress, setProgress] = useState(0);
-  const [loadingText, setLoadingText] = useState('Initializing');
-  const [isComplete, setIsComplete] = useState(false);
+  const [stageIdx, setStageIdx] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const stage = STAGES[Math.min(stageIdx, STAGES.length - 1)];
 
   useEffect(() => {
-    // Simulate loading progress
-    const loadingStages = [
-      { progress: 20, text: 'Loading Assets', duration: 400 },
-      { progress: 40, text: 'Preparing Interface', duration: 400 },
-      { progress: 60, text: 'Setting Up Components', duration: 400 },
-      { progress: 80, text: 'Optimizing Performance', duration: 400 },
-      { progress: 100, text: 'Almost Ready', duration: 400 },
-    ];
-
-    let currentStage = 0;
-
-    const progressInterval = setInterval(() => {
-      if (currentStage < loadingStages.length) {
-        const stage = loadingStages[currentStage];
-        setProgress(stage.progress);
-        setLoadingText(stage.text);
-        currentStage++;
-      } else {
-        clearInterval(progressInterval);
-        setTimeout(() => {
-          setIsComplete(true);
+    const id = setInterval(() => {
+      setStageIdx((prev) => {
+        if (prev >= STAGES.length - 1) {
+          clearInterval(id);
           setTimeout(() => {
-            onLoadingComplete?.();
-          }, 800);
-        }, 300);
-      }
-    }, 500);
-
-    return () => clearInterval(progressInterval);
+            setDone(true);
+            setTimeout(() => onLoadingComplete?.(), 700);
+          }, 350);
+        }
+        return prev + 1;
+      });
+    }, 480);
+    return () => clearInterval(id);
   }, [onLoadingComplete]);
 
   return (
     <AnimatePresence>
-      {!isComplete && (
+      {!done && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.1 }}
-          transition={{ duration: 0.8 }}
+          exit={{ opacity: 0, scale: 1.04 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           className="fixed inset-0 z-[9999] bg-[#0a0a0a] flex items-center justify-center overflow-hidden"
         >
-          {/* Animated Background */}
-          <div className="absolute inset-0">
-            {/* Gradient orbs */}
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-                rotate: [0, 180, 360],
-                opacity: [0.15, 0.25, 0.15],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-              className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#DC143C] rounded-full blur-3xl"
-            />
-            <motion.div
-              animate={{
-                scale: [1.2, 1, 1.2],
-                rotate: [360, 180, 0],
-                opacity: [0.25, 0.15, 0.25],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-              className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#8B0000] rounded-full blur-3xl"
-            />
+          {/* Background blobs — pure CSS */}
+          <div className="blob-a absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-[#DC143C]/12 blur-3xl" />
+          <div className="blob-b absolute bottom-1/4 left-1/4 w-80 h-80 rounded-full bg-[#8B0000]/12 blur-3xl" />
 
-            {/* Animated grid */}
-            <motion.div
-              className="absolute inset-0 opacity-10"
+          {/* Grid */}
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage: `linear-gradient(rgba(220,20,60,0.4) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(220,20,60,0.4) 1px, transparent 1px)`,
+              backgroundSize: '50px 50px',
+            }}
+          />
+
+          {/* Static CSS particles */}
+          {PARTICLES.map((p, i) => (
+            <span
+              key={i}
+              className="absolute w-1 h-1 rounded-full bg-[#DC143C]"
               style={{
-                backgroundImage: `
-                  linear-gradient(rgba(220, 20, 60, 0.3) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(220, 20, 60, 0.3) 1px, transparent 1px)
-                `,
-                backgroundSize: '50px 50px',
-              }}
-              animate={{
-                backgroundPosition: ['0px 0px', '50px 50px'],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: 'linear',
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                animation: `particle-rise ${p.d} ease-in-out ${p.delay} infinite`,
+                opacity: 0,
               }}
             />
+          ))}
 
-            {/* Floating particles */}
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-[#DC143C] rounded-full"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  y: [0, -100, 0],
-                  opacity: [0, 1, 0],
-                  scale: [0, 1.5, 0],
-                }}
-                transition={{
-                  duration: 3 + Math.random() * 2,
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
-          </div>
+          {/* Main content */}
+          <div className="relative z-10 flex flex-col items-center gap-10 px-6 w-full max-w-sm">
 
-          {/* Main Content */}
-          <div className="relative z-10 flex flex-col items-center space-y-12">
-            {/* Logo Animation */}
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{
-                type: 'spring',
-                stiffness: 260,
-                damping: 20,
-                delay: 0.2,
-              }}
-              className="relative"
-            >
-              {/* Outer rotating ring */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-                className="absolute -inset-8 border-2 border-[#DC143C]/30 rounded-full"
-              />
+            {/* Logo ring */}
+            <div className="relative">
+              {/* Outer ring — CSS spin */}
+              <div className="spin-cw absolute -inset-8 rounded-full border-2 border-dashed border-[#DC143C]/25" />
+              {/* Inner ring */}
+              <div className="spin-ccw absolute -inset-4 rounded-full border border-[#DC143C]/40" />
 
-              {/* Middle rotating ring */}
+              {/* Logo circle */}
               <motion.div
-                animate={{ rotate: -360 }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-                className="absolute -inset-4 border-2 border-[#DC143C]/50 rounded-full"
-              />
-
-              {/* Logo container */}
-              <motion.div
-                className="relative w-32 h-32 bg-gradient-to-br from-[#DC143C] to-[#8B0000] rounded-full flex items-center justify-center"
-                animate={{
-                  boxShadow: [
-                    '0 0 20px rgba(220, 20, 60, 0.5)',
-                    '0 0 60px rgba(220, 20, 60, 0.8)',
-                    '0 0 20px rgba(220, 20, 60, 0.5)',
-                  ],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                }}
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 220, damping: 18, delay: 0.15 }}
+                className="relative w-28 h-28 rounded-full bg-gradient-to-br from-[#DC143C] to-[#8B0000] flex items-center justify-center pulse-glow"
+                style={{ boxShadow: '0 0 40px rgba(220,20,60,0.45)' }}
               >
-                <motion.div
-                  animate={{
-                    rotate: [0, 360],
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
-                  <Code2 className="text-white" size={48} />
-                </motion.div>
+                <span className="text-white text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  RP
+                </span>
               </motion.div>
 
-              {/* Pulse effect */}
-              <motion.div
-                className="absolute inset-0 rounded-full bg-[#DC143C]"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.5, 0, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                }}
-              />
-            </motion.div>
+              {/* Ping pulse */}
+              <div className="absolute inset-0 rounded-full bg-[#DC143C]/20 animate-ping" />
+            </div>
 
-            {/* Brand Name */}
+            {/* Brand name */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
+              transition={{ delay: 0.35, duration: 0.55 }}
               className="text-center"
             >
-              <motion.h1
-                className="text-5xl font-bold text-white mb-2"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-              >
+              <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 <span className="text-[#DC143C]">{'<'}</span>
                 Portfolio
                 <span className="text-[#DC143C]">{'/>'}</span>
-              </motion.h1>
-              <motion.div
-                className="flex items-center justify-center gap-2 text-gray-400"
-                animate={{
-                  opacity: [0.5, 1, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                }}
-              >
-                <Sparkles size={16} />
-                <span className="text-sm tracking-wider">Creating Excellence</span>
-                <Sparkles size={16} />
-              </motion.div>
+              </h1>
+              <p className="text-gray-500 text-sm mt-1 tracking-widest uppercase">Rohit Patil</p>
             </motion.div>
 
-            {/* Progress Bar */}
-            <div className="w-80 space-y-4">
-              {/* Loading text */}
-              <motion.div
-                key={loadingText}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex items-center justify-between text-sm"
-              >
-                <span className="text-gray-400">{loadingText}</span>
-                <span className="text-[#DC143C] font-bold">{progress}%</span>
-              </motion.div>
-
-              {/* Progress bar container */}
-              <div className="relative h-2 bg-gray-800/50 rounded-full overflow-hidden backdrop-blur-sm">
-                {/* Background glow */}
-                <motion.div
-                  className="absolute inset-0 bg-[#DC143C]/10"
-                  animate={{
-                    opacity: [0.3, 0.6, 0.3],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                  }}
-                />
-
-                {/* Progress fill */}
-                <motion.div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#DC143C] via-[#FF1744] to-[#DC143C] rounded-full"
-                  style={{
-                    width: `${progress}%`,
-                    boxShadow: '0 0 20px rgba(220, 20, 60, 0.8)',
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    ease: 'easeOut',
-                  }}
-                >
-                  {/* Shimmer effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                    animate={{
-                      x: ['-100%', '200%'],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                  />
-
-                  {/* Glowing tip */}
-                  <motion.div
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.8, 1, 0.8],
-                    }}
-                    transition={{
-                      duration: 1,
-                      repeat: Infinity,
-                    }}
-                    style={{
-                      boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
-                    }}
-                  />
-                </motion.div>
-              </div>
-            </div>
-
-            {/* Loading dots */}
+            {/* Progress */}
             <motion.div
-              className="flex gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
+              transition={{ delay: 0.5 }}
+              className="w-full space-y-3"
             >
-              {[0, 1, 2].map((i) => (
+              <div className="flex justify-between text-sm">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={stage.text}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-gray-400"
+                  >
+                    {stage.text}
+                  </motion.span>
+                </AnimatePresence>
+                <span className="text-[#DC143C] font-bold tabular-nums">{stage.progress}%</span>
+              </div>
+
+              {/* Bar */}
+              <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
                 <motion.div
-                  key={i}
-                  className="w-2 h-2 bg-[#DC143C] rounded-full"
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.3, 1, 0.3],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    delay: i * 0.2,
-                  }}
+                  className="h-full bg-gradient-to-r from-[#DC143C] to-[#FF1744] rounded-full relative shimmer-bar"
+                  animate={{ width: `${stage.progress}%` }}
+                  transition={{ duration: 0.45, ease: 'easeOut' }}
+                  style={{ boxShadow: '0 0 12px rgba(220,20,60,0.6)' }}
                 />
+              </div>
+            </motion.div>
+
+            {/* Bouncing dots */}
+            <div className="flex gap-2">
+              {[0, 1, 2].map((i) => (
+                <span key={i} className={`w-2 h-2 bg-[#DC143C] rounded-full dot-${i + 1}`} />
               ))}
-            </motion.div>
+            </div>
 
-            {/* Fun loading messages */}
-            <motion.div
-              key={`tip-${progress}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-center text-gray-500 text-sm max-w-md px-4"
-            >
-              {progress < 40 && "✨ Crafting pixel-perfect designs..."}
-              {progress >= 40 && progress < 70 && "🚀 Optimizing for blazing speed..."}
-              {progress >= 70 && progress < 100 && "🎨 Adding the finishing touches..."}
-              {progress === 100 && "🎉 Ready to impress!"}
-            </motion.div>
+            {/* Tip */}
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={getTip(stage.progress)}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="text-gray-500 text-sm text-center"
+              >
+                {getTip(stage.progress)}
+              </motion.p>
+            </AnimatePresence>
           </div>
-
-          {/* Corner decorations */}
-          <motion.div
-            className="absolute top-8 left-8"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          >
-            <Zap className="text-[#DC143C]/30" size={32} />
-          </motion.div>
-          <motion.div
-            className="absolute bottom-8 right-8"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          >
-            <Zap className="text-[#DC143C]/30" size={32} />
-          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

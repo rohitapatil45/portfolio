@@ -1,0 +1,291 @@
+/* Import Enhanced Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== BASE STYLES ==================== */
+html {
+  scroll-behavior: smooth;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0a0a0a;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* ==================== CUSTOM CURSOR ==================== */
+* { cursor: none !important; }
+
+a, button, input, textarea, select, [role="button"] {
+  cursor: none !important;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar { width: 8px; }
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #DC143C 0%, #8B0000 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FF1744 0%, #DC143C 100%);
+}
+
+/* ==================== SELECTION ==================== */
+::selection {
+  background: rgba(220, 20, 60, 0.3);
+  color: #ffffff;
+}
+
+/* ==================== TRANSITIONS ==================== */
+button, a {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.App {
+  overflow-x: hidden;
+  position: relative;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #DC143C 0%, #FF1744 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 20, 60, 0.15);
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(220, 20, 60, 0.4),
+              0 0 40px rgba(220, 20, 60, 0.2);
+}
+
+/* ==================== CSS KEYFRAME ANIMATIONS (GPU-composited) ==================== */
+
+/* Blob drift — uses only transform + opacity (compositor thread, zero JS) */
+@keyframes blob-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(40px, -30px) scale(1.08); }
+  66%       { transform: translate(-20px, 20px) scale(0.95); }
+}
+@keyframes blob-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1.05); }
+  33%       { transform: translate(-35px, 25px) scale(0.96); }
+  66%       { transform: translate(25px, -20px) scale(1.1); }
+}
+
+.blob-a {
+  animation: blob-drift-a 18s ease-in-out infinite;
+  will-change: transform;
+}
+.blob-b {
+  animation: blob-drift-b 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Floating ring spinner */
+@keyframes spin-cw  { to { transform: rotate(360deg);  } }
+@keyframes spin-ccw { to { transform: rotate(-360deg); } }
+
+.spin-cw  { animation: spin-cw  8s linear infinite; will-change: transform; }
+.spin-ccw { animation: spin-ccw 6s linear infinite; will-change: transform; }
+
+/* Gentle float for decorative elements */
+@keyframes float-up-down {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-14px); }
+}
+.float { animation: float-up-down 4s ease-in-out infinite; will-change: transform; }
+
+/* Pulse glow (opacity only — compositor-safe) */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.7;  }
+}
+.pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+/* Heartbeat */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1);    }
+  14%       { transform: scale(1.12); }
+  28%       { transform: scale(1);    }
+  42%       { transform: scale(1.08); }
+  56%       { transform: scale(1);    }
+}
+.heartbeat { animation: heartbeat 1.4s ease-in-out infinite; }
+
+/* Shimmer sweep */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%);  }
+}
+.shimmer-bar {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: shimmer 2.4s ease infinite;
+}
+
+/* Gradient border glow animation */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%;   }
+  50%       { background-position: 100% 50%; }
+}
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Bouncing dots (loading) */
+@keyframes bounce-dot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%           { transform: scale(1.2); opacity: 1;   }
+}
+.dot-1 { animation: bounce-dot 1.4s ease-in-out infinite 0s;    }
+.dot-2 { animation: bounce-dot 1.4s ease-in-out infinite 0.16s; }
+.dot-3 { animation: bounce-dot 1.4s ease-in-out infinite 0.32s; }
+
+/* Particle rise (for decorative background dots) */
+@keyframes particle-rise {
+  0%   { transform: translateY(0)   scale(0); opacity: 0;   }
+  30%  { transform: translateY(-30px) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-80px) scale(0); opacity: 0;   }
+}
+
+/* Timeline line draw */
+@keyframes line-draw {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* Arrow bounce */
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(8px); }
+}
+.arrow-bounce { animation: arrow-bounce 2s ease-in-out infinite; }
+
+/* Slide-in underline */
+@keyframes underline-in {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Typewriter cursor blink */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.cursor-blink { animation: cursor-blink 1s step-end infinite; }
+
+/* ==================== LINK HOVER UNDERLINE ==================== */
+a:not(.no-effect) {
+  position: relative;
+}
+a:not(.no-effect)::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #DC143C, #FF1744);
+  transition: width 0.3s ease;
+}
+a:not(.no-effect):hover::after {
+  width: 100%;
+}
+
+/* ==================== HIDE SCROLLBAR ==================== */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ==================== FOCUS STYLES ==================== */
+*:focus-visible {
+  outline: 2px solid #DC143C;
+  outline-offset: 2px;
+}
+*:focus:not(:focus-visible) { outline: none; }
+
+/* ==================== SECTION CONTAINMENT (perf) ==================== */
+section {
+  contain: layout style;
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+  * { cursor: auto !important; }
+  .custom-cursor { display: none !important; }
+}
+
+/* ==================== REDUCED MOTION ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  * { cursor: auto !important; }
+  .custom-cursor { display: none !important; }
+}
+
+/* ==================== TOUCH DEVICES ==================== */
+@media (hover: none) and (pointer: coarse) {
+  * { cursor: auto !important; }
+  .custom-cursor { display: none !important; }
+}
+
+/* ==================== TAILWIND LAYER UTILITIES ==================== */
+@layer utilities {
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#DC143C] to-[#FF1744];
+  }
+  .perspective-1000 { perspective: 1000px; }
+  .preserve-3d { transform-style: preserve-3d; }
+  .backface-hidden { backface-visibility: hidden; }
+  .glow-red {
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.4),
+                0 0 40px rgba(220, 20, 60, 0.2);
+  }
+  .text-glow-red {
+    text-shadow: 0 0 20px rgba(220, 20, 60, 0.5),
+                 0 0 40px rgba(220, 20, 60, 0.25);
+  }
+}

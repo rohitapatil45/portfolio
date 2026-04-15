@@ -1,1042 +1,282 @@
-
+'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useForm } from 'react-hook-form';
 import { personalInfo } from '../data/mockData';
-import { Mail, Phone, MapPin, Send, Github, Linkedin, Sparkles } from 'lucide-react';
+import {
+  Mail, Phone, MapPin, Send, Github, Linkedin,
+  CheckCircle2, MessageSquare, Sparkles,
+} from 'lucide-react';
+
+/* Static particle positions — never Math.random() in render */
+const PARTICLES = [
+  { top: '8%',  left: '7%',  dur: '3.2s', delay: '0s'   },
+  { top: '18%', left: '90%', dur: '4.5s', delay: '0.6s' },
+  { top: '50%', left: '4%',  dur: '3.8s', delay: '1.0s' },
+  { top: '72%', left: '80%', dur: '4.1s', delay: '0.3s' },
+  { top: '85%', left: '22%', dur: '3.5s', delay: '1.4s' },
+  { top: '38%', left: '95%', dur: '4.8s', delay: '0.8s' },
+];
+
+const CONTACT_ITEMS = (info) => [
+  { href: `mailto:${info.email}`, Icon: Mail,   label: 'Email Address', value: info.email,    delay: 0.2 },
+  { href: `tel:${info.phone}`,    Icon: Phone,  label: 'Phone Number',  value: info.phone,    delay: 0.3 },
+  { href: null,                   Icon: MapPin, label: 'Location',      value: info.location, delay: 0.4 },
+];
+
+const SOCIALS = (info) => [
+  { href: info.github,  Icon: Github,   label: 'GitHub'   },
+  { href: info.linkedIn, Icon: Linkedin, label: 'LinkedIn' },
+];
 
 const Contact = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.08 });
+  const [status, setStatus] = useState('idle'); // idle | sending | sent
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   const onSubmit = useCallback(async (data) => {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log('Form data:', data);
+    setStatus('sending');
+    await new Promise((r) => setTimeout(r, 1400));
+    console.log('Form:', data);
     reset();
-    setIsSubmitting(false);
+    setStatus('sent');
+    setTimeout(() => setStatus('idle'), 4500);
   }, [reset]);
 
-  // Memoize contact info data
-  const contactInfoData = useMemo(() => [
-    {
-      href: `mailto:${personalInfo.email}`,
-      icon: <Mail className="text-[#DC143C]" size={24} />,
-      label: 'Email',
-      value: personalInfo.email,
-      delay: 0.3,
-    },
-    {
-      href: `tel:${personalInfo.phone}`,
-      icon: <Phone className="text-[#DC143C]" size={24} />,
-      label: 'Phone',
-      value: personalInfo.phone,
-      delay: 0.4,
-    },
-    {
-      icon: <MapPin className="text-[#DC143C]" size={24} />,
-      label: 'Location',
-      value: personalInfo.location,
-      delay: 0.5,
-    },
-  ], []);
-
-  const socialLinks = useMemo(() => [
-    { href: personalInfo.github, icon: <Github size={24} />, label: 'GitHub', delay: 0.6 },
-    { href: personalInfo.linkedIn, icon: <Linkedin size={24} />, label: 'LinkedIn', delay: 0.7 },
-  ], []);
+  const contactItems = useMemo(() => CONTACT_ITEMS(personalInfo), []);
+  const socials      = useMemo(() => SOCIALS(personalInfo), []);
 
   return (
-    <section
-      id="contact"
-      className="py-32 bg-[#0a0a0a] relative overflow-hidden"
-    >
-      {/* Simplified Animated Background */}
-      <div className="absolute inset-0">
-        <motion.div
-          animate={{
-            scale: [1, 1.15, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[#DC143C] rounded-full blur-3xl opacity-12"
-          style={{ willChange: 'transform' }}
-        />
-        <motion.div
-          animate={{
-            scale: [1.15, 1, 1.15],
-            rotate: [360, 180, 0],
-          }}
-          transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
-          className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#DC143C] rounded-full blur-3xl opacity-12"
-          style={{ willChange: 'transform' }}
-        />
+    <section id="contact" className="py-28 bg-[#0a0a0a] relative overflow-hidden">
 
-        {/* Reduced floating particles - 10 instead of 20 */}
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-[#DC143C] rounded-full"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -25, 0],
-              opacity: [0, 0.8, 0],
-              scale: [0, 1.2, 0],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
+      {/* CSS blobs */}
+      <div className="blob-a absolute top-1/4 -left-32 w-[600px] h-[600px] rounded-full bg-[#DC143C]/7 blur-3xl pointer-events-none" />
+      <div className="blob-b absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-[#DC143C]/5 blur-3xl pointer-events-none" />
 
-      <div
-        ref={ref}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
-      >
-        {/* Section Title */}
+      {/* CSS particles */}
+      {PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="absolute w-1 h-1 rounded-full bg-[#DC143C] pointer-events-none"
+          style={{ top: p.top, left: p.left, animation: `particle-rise ${p.dur} ease-in-out ${p.delay} infinite`, opacity: 0 }}
+        />
+      ))}
+
+      {/* Subtle grid */}
+      <div className="absolute inset-0 opacity-[0.025] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(rgba(220,20,60,0.5) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(220,20,60,0.5) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px',
+        }}
+      />
+
+      <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        {/* ── Header ── */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-16"
         >
-          <motion.div className="inline-block relative">
-            <h2
-              className="text-5xl sm:text-7xl font-bold text-white mb-6"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-              }}
-            >
-              Get In{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC143C] to-[#FF1744] relative">
-                Touch
-                <motion.div
-                  className="absolute -top-6 -right-10"
-                  animate={{
-                    rotate: [0, 360],
-                    scale: [1, 1.2, 1],
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <Sparkles className="text-[#DC143C]" size={28} />
-                </motion.div>
-              </span>
-            </h2>
-          </motion.div>
+          <div className="inline-flex items-center gap-2 px-5 py-2 bg-[#DC143C]/10 border border-[#DC143C]/25 rounded-full mb-6">
+            <MessageSquare size={14} className="text-[#DC143C]" />
+            <span className="text-[#DC143C] text-xs font-bold tracking-[0.2em] uppercase">Let&apos;s Talk</span>
+          </div>
+
+          <h2 className="text-5xl sm:text-7xl font-bold text-white mb-4 leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Get In{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC143C] to-[#FF6B6B]">Touch</span>
+          </h2>
+
           <motion.div
             initial={{ scaleX: 0 }}
             animate={inView ? { scaleX: 1 } : {}}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="w-32 h-1.5 bg-gradient-to-r from-[#DC143C] to-[#FF1744] mx-auto rounded-full mb-8"
-            style={{ boxShadow: '0 0 20px rgba(220, 20, 60, 0.4)' }}
+            transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="w-24 h-0.5 bg-gradient-to-r from-[#DC143C] to-[#FF1744] mx-auto mb-5 rounded-full"
+            style={{ boxShadow: '0 0 16px rgba(220,20,60,0.5)' }}
           />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.6 }}
-            className="text-gray-400 text-xl max-w-2xl mx-auto"
-          >
-            Have a project in mind or want to collaborate? Let's connect!
-          </motion.p>
+          <p className="text-gray-500 max-w-lg mx-auto">
+            Have a project in mind or want to collaborate? I&apos;d love to hear from you.
+          </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-10"
-          >
-            <div>
-              <motion.h3
-                className="text-3xl font-bold text-white mb-8 flex items-center gap-3"
-                whileHover={{ x: 10 }}
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                  className="w-2 h-2 bg-[#DC143C] rounded-full"
-                />
-                Contact Information
-              </motion.h3>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-start">
 
-              <div className="space-y-6">
-                {contactInfoData.map((info, index) => (
-                  <ContactInfoCard
-                    key={index}
-                    {...info}
-                    inView={inView}
-                  />
-                ))}
+          {/* ── Left panel ── */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-2 space-y-6"
+          >
+            {/* Intro card */}
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-gray-800/60 relative overflow-hidden group hover:border-[#DC143C]/30 transition-colors duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#DC143C]/5 rounded-full blur-2xl group-hover:bg-[#DC143C]/10 transition-colors" />
+              <Sparkles size={22} className="text-[#DC143C] mb-3" />
+              <h3 className="text-white font-bold text-lg mb-2">Open to opportunities</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Available for full-time roles, freelance projects, and exciting collaborations.
+              </p>
+              <div className="flex items-center gap-2 mt-4">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#DC143C] opacity-40" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#DC143C]" />
+                </span>
+                <span className="text-xs text-gray-400">Available now</span>
               </div>
             </div>
 
-            {/* Social Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5 }}
-            >
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <motion.div
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity }}
-                  className="w-2 h-2 bg-[#DC143C] rounded-full"
-                />
-                Connect With Me
-              </h3>
-              <div className="flex gap-6">
-                {socialLinks.map((social, index) => (
-                  <SocialButton
-                    key={index}
-                    {...social}
-                  />
+            {/* Contact info cards */}
+            <div className="space-y-3">
+              {contactItems.map((item) => (
+                <ContactInfoCard key={item.label} {...item} inView={inView} />
+              ))}
+            </div>
+
+            {/* Socials */}
+            <div>
+              <p className="text-xs text-gray-600 uppercase tracking-widest mb-3 font-medium">Connect</p>
+              <div className="flex gap-3">
+                {socials.map((s) => (
+                  <SocialBtn key={s.label} {...s} />
                 ))}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
 
-          {/* Contact Form */}
+          {/* ── Right — Form ── */}
           <motion.div
-            initial={{ opacity: 0, x: 100 }}
+            initial={{ opacity: 0, x: 50 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-3"
           >
-            <motion.form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-6 relative"
-            >
-              <div className="space-y-6">
-                {/* Name Field */}
-                <FormField
-                  label="Name"
-                  id="name"
-                  type="text"
-                  placeholder="Your Name"
-                  register={register('name', {
-                    required: 'Name is required',
-                    minLength: { value: 2, message: 'Name must be at least 2 characters' },
-                  })}
-                  error={errors.name}
-                  focusedField={focusedField}
-                  setFocusedField={setFocusedField}
-                />
+            <div className="relative p-7 sm:p-9 rounded-3xl bg-gradient-to-br from-[#141414] to-[#0c0c0c] border border-gray-800/60 overflow-hidden">
+              {/* Corner glow */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-[#DC143C]/8 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#DC143C]/5 rounded-full blur-3xl" />
 
-                {/* Email Field */}
-                <FormField
-                  label="Email"
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  register={register('email', {
-                    required: 'Email is required',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Invalid email address',
-                    },
-                  })}
-                  error={errors.email}
-                  focusedField={focusedField}
-                  setFocusedField={setFocusedField}
-                />
+              <h3 className="text-xl font-bold text-white mb-6 relative z-10">Send a Message</h3>
 
-                {/* Subject Field */}
-                <FormField
-                  label="Subject"
-                  id="subject"
-                  type="text"
-                  placeholder="What's this about?"
-                  register={register('subject', {
-                    required: 'Subject is required',
-                    minLength: { value: 5, message: 'Subject must be at least 5 characters' },
-                  })}
-                  error={errors.subject}
-                  focusedField={focusedField}
-                  setFocusedField={setFocusedField}
-                />
-
-                {/* Message Field */}
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-white font-medium mb-3 flex items-center gap-2"
-                  >
-                    <motion.div
-                      animate={{
-                        rotate: focusedField === 'message' ? 360 : 0,
-                      }}
-                      className="w-1.5 h-1.5 bg-[#DC143C] rounded-full"
-                    />
-                    Message
-                  </label>
-                  <motion.textarea
-                    {...register('message', {
-                      required: 'Message is required',
-                      minLength: { value: 10, message: 'Message must be at least 10 characters' },
-                    })}
-                    id="message"
-                    rows="5"
-                    placeholder="Tell me about your project..."
-                    onFocus={() => setFocusedField('message')}
-                    onBlur={() => setFocusedField(null)}
-                    className="w-full px-6 py-4 bg-[#1a1a1a] border border-gray-800 rounded-2xl text-white focus:border-[#DC143C] focus:outline-none transition-all resize-none"
-                    whileFocus={{
-                      boxShadow: '0 0 30px rgba(220, 20, 60, 0.25)',
-                      scale: 1.01,
-                    }}
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 relative z-10">
+                {/* Name + Email row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FloatField
+                    label="Full Name" id="name" type="text"
+                    reg={register('name', { required: 'Required', minLength: { value: 2, message: 'Min 2 chars' } })}
+                    error={errors.name}
                   />
-                  {errors.message && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-[#DC143C] text-sm mt-2 flex items-center gap-2"
-                    >
-                      <span className="w-1 h-1 bg-[#DC143C] rounded-full" />
-                      {errors.message.message}
-                    </motion.p>
-                  )}
+                  <FloatField
+                    label="Email Address" id="email" type="email"
+                    reg={register('email', {
+                      required: 'Required',
+                      pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Invalid email' },
+                    })}
+                    error={errors.email}
+                  />
                 </div>
 
-                {/* Submit Button */}
+                <FloatField
+                  label="Subject" id="subject" type="text"
+                  reg={register('subject', { required: 'Required', minLength: { value: 4, message: 'Min 4 chars' } })}
+                  error={errors.subject}
+                />
+
+                <div>
+                  <label htmlFor="message" className="block text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">Message</label>
+                  <textarea
+                    {...register('message', { required: 'Required', minLength: { value: 10, message: 'Min 10 chars' } })}
+                    id="message" rows={5} placeholder="Tell me about your project…"
+                    className="w-full px-4 py-3.5 bg-[#1e1e1e] border border-gray-700/60 rounded-xl text-white text-sm placeholder-gray-600 focus:border-[#DC143C]/60 focus:outline-none focus:ring-1 focus:ring-[#DC143C]/20 transition-colors resize-none"
+                  />
+                  {errors.message && <ErrMsg msg={errors.message.message} />}
+                </div>
+
+                {/* Submit */}
                 <motion.button
                   type="submit"
-                  disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
+                  disabled={status === 'sending'}
+                  whileHover={status === 'idle' ? { scale: 1.02, boxShadow: '0 0 30px rgba(220,20,60,0.35)' } : {}}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ willChange: 'transform' }}
+                  className={`w-full relative overflow-hidden py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-3 transition-all duration-300 shimmer-bar ${
+                    status === 'sent'
+                      ? 'bg-gradient-to-r from-emerald-600 to-emerald-500'
+                      : 'bg-gradient-to-r from-[#DC143C] to-[#e8294a] hover:from-[#e8294a] hover:to-[#DC143C]'
+                  } disabled:opacity-60 disabled:cursor-not-allowed`}
                 >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-[#DC143C] via-[#FF1744] to-[#DC143C]"
-                    animate={{
-                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    style={{ backgroundSize: '200% 200%' }}
-                  />
-                  <div className="relative px-8 py-5 rounded-2xl flex items-center justify-center gap-3 text-white font-semibold text-lg">
-                    {isSubmitting ? (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                        />
-                        <span>Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <motion.div
-                          whileHover={{ x: 5 }}
-                          transition={{ type: 'spring', stiffness: 400 }}
-                        >
-                          <Send size={20} />
-                        </motion.div>
-                        <span>Send Message</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Button glow effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-white rounded-2xl opacity-0 group-hover:opacity-15 transition-opacity"
-                    style={{
-                      boxShadow: '0 0 40px rgba(220, 20, 60, 0.6)',
-                    }}
-                  />
+                  {status === 'sending' && <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                  {status === 'sent'    && <CheckCircle2 size={19} />}
+                  {status === 'idle'   && <Send size={17} />}
+                  {status === 'sending' ? 'Sending…'         : null}
+                  {status === 'sent'    ? 'Message Sent! 🎉' : null}
+                  {status === 'idle'    ? 'Send Message'      : null}
                 </motion.button>
-              </div>
-            </motion.form>
+              </form>
+            </div>
           </motion.div>
+
         </div>
       </div>
     </section>
   );
 };
 
-// Optimized Contact Info Card Component
-const ContactInfoCard = React.memo(({ href, icon, label, value, delay, inView }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const card = (
+/* ── Sub-components ──────────────────────────────────────────────── */
+const ContactInfoCard = React.memo(({ href, Icon, label, value, delay, inView }) => {
+  const inner = (
     <motion.div
-      initial={{ opacity: 0, x: -50 }}
+      initial={{ opacity: 0, x: -24 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ delay, type: 'spring' }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ scale: 1.02, x: 12 }}
-      className="relative flex items-center gap-5 p-6 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-2xl border border-gray-800 hover:border-[#DC143C] transition-all group overflow-hidden"
-      style={{ willChange: 'transform' }}
+      transition={{ delay, ease: [0.22, 1, 0.36, 1] }}
+      className="group flex items-center gap-4 p-4 rounded-xl bg-[#141414] border border-gray-800/60 hover:border-[#DC143C]/35 hover:bg-[#DC143C]/5 transition-all duration-250"
     >
-      {/* Background glow */}
-      <motion.div
-        className="absolute top-0 right-0 w-32 h-32 bg-[#DC143C]/15 rounded-full blur-3xl"
-        animate={{
-          scale: isHovered ? 1.4 : 1,
-          opacity: isHovered ? 0.35 : 0.15,
-        }}
-      />
-
-      <motion.div
-        className="p-4 bg-gradient-to-br from-[#DC143C]/20 to-[#DC143C]/5 rounded-xl relative z-10"
-        whileHover={{ rotate: 360, scale: 1.1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {icon}
-      </motion.div>
-      <div className="relative z-10">
-        <div className="text-gray-400 text-sm font-medium mb-1">{label}</div>
-        <div className="text-white font-semibold text-lg">{value}</div>
+      <div className="p-2.5 rounded-lg bg-[#DC143C]/10 border border-[#DC143C]/15 group-hover:bg-[#DC143C]/20 transition-colors flex-shrink-0">
+        <Icon size={18} className="text-[#DC143C]" />
       </div>
-
-      {/* Animated shine effect */}
-      <motion.div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-        initial={{ x: '-100%' }}
-        whileHover={{ x: '100%' }}
-        transition={{ duration: 0.7 }}
-        style={{
-          background:
-            'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-        }}
-      />
+      <div className="min-w-0">
+        <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-0.5">{label}</p>
+        <p className="text-white text-sm font-medium truncate">{value}</p>
+      </div>
     </motion.div>
   );
-
-  return href ? (
-    <a href={href} className="block">
-      {card}
-    </a>
-  ) : (
-    card
-  );
+  return href ? <a href={href} className="block">{inner}</a> : inner;
 });
-
 ContactInfoCard.displayName = 'ContactInfoCard';
 
-// Optimized Social Button Component
-const SocialButton = React.memo(({ href, icon, label, delay }) => {
-  return (
-    <motion.a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, type: 'spring', bounce: 0.5 }}
-      whileHover={{ scale: 1.12, y: -5, rotate: 3 }}
-      whileTap={{ scale: 0.95 }}
-      className="relative p-5 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-2xl border border-gray-800 hover:border-[#DC143C] transition-all group overflow-hidden"
-      style={{ willChange: 'transform' }}
-    >
-      {/* Background glow */}
-      <motion.div
-        className="absolute inset-0 bg-[#DC143C]/15 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"
-        whileHover={{ scale: 1.15 }}
-      />
-      <div className="relative z-10 text-gray-400 group-hover:text-[#DC143C] transition-colors">
-        {icon}
-      </div>
+const SocialBtn = React.memo(({ href, Icon, label }) => (
+  <a
+    href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+    className="group relative flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#141414] border border-gray-800/60 hover:border-[#DC143C]/40 hover:bg-[#DC143C]/8 transition-all duration-200"
+  >
+    <Icon size={18} className="text-gray-400 group-hover:text-[#DC143C] transition-colors" />
+    <span className="text-gray-400 group-hover:text-white text-sm transition-colors">{label}</span>
+  </a>
+));
+SocialBtn.displayName = 'SocialBtn';
 
-      {/* Tooltip */}
-      <motion.span
-        className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-[#DC143C] text-white px-4 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-        initial={{ y: 10 }}
-        whileHover={{ y: 0 }}
-      >
-        {label}
-      </motion.span>
-    </motion.a>
-  );
-});
+const FloatField = React.memo(({ label, id, type, reg, error }) => (
+  <div>
+    <label htmlFor={id} className="block text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">{label}</label>
+    <input
+      {...reg} type={type} id={id}
+      className="w-full px-4 py-3.5 bg-[#1e1e1e] border border-gray-700/60 rounded-xl text-white text-sm placeholder-gray-600 focus:border-[#DC143C]/60 focus:outline-none focus:ring-1 focus:ring-[#DC143C]/20 transition-colors"
+    />
+    {error && <ErrMsg msg={error.message} />}
+  </div>
+));
+FloatField.displayName = 'FloatField';
 
-SocialButton.displayName = 'SocialButton';
-
-// Optimized Form Field Component
-const FormField = React.memo(({
-  label,
-  id,
-  type,
-  placeholder,
-  register,
-  error,
-  focusedField,
-  setFocusedField,
-}) => {
-  return (
-    <div className="mb-6">
-      <label
-        htmlFor={id}
-        className="block text-white font-medium mb-3 flex items-center gap-2"
-      >
-        <motion.div
-          animate={{
-            rotate: focusedField === id ? 360 : 0,
-          }}
-          className="w-1.5 h-1.5 bg-[#DC143C] rounded-full"
-        />
-        {label}
-      </label>
-      <motion.input
-        {...register}
-        type={type}
-        id={id}
-        placeholder={placeholder}
-        onFocus={() => setFocusedField(id)}
-        onBlur={() => setFocusedField(null)}
-        className="w-full px-6 py-4 bg-[#1a1a1a] border border-gray-800 rounded-2xl text-white focus:border-[#DC143C] focus:outline-none transition-all"
-        whileFocus={{
-          boxShadow: '0 0 30px rgba(220, 20, 60, 0.25)',
-          scale: 1.01,
-        }}
-      />
-      {error && (
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-[#DC143C] text-sm mt-2 flex items-center gap-2"
-        >
-          <span className="w-1 h-1 bg-[#DC143C] rounded-full" />
-          {error.message}
-        </motion.p>
-      )}
-    </div>
-  );
-});
-
-FormField.displayName = 'FormField';
+const ErrMsg = ({ msg }) => (
+  <p className="mt-1.5 text-[#DC143C] text-xs flex items-center gap-1.5">
+    <span className="w-1 h-1 rounded-full bg-[#DC143C]" />
+    {msg}
+  </p>
+);
 
 export default Contact;
-
-
-// import React, { useState } from 'react';
-// import { motion } from 'framer-motion';
-// import { useInView } from 'react-intersection-observer';
-// import { useForm } from 'react-hook-form';
-// import { personalInfo } from '../data/mockData';
-// import { Mail, Phone, MapPin, Send, Github, Linkedin, Sparkles } from 'lucide-react';
-// // import { toast } from '../hooks/use-toast';
-
-// const Contact = () => {
-//   const [ref, inView] = useInView({
-//     triggerOnce: true,
-//     threshold: 0.1,
-//   });
-
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [focusedField, setFocusedField] = useState(null);
-//   const { register, handleSubmit, formState: { errors }, reset } = useForm();
-
-//   const onSubmit = async (data) => {
-//     setIsSubmitting(true);
-//     await new Promise((resolve) => setTimeout(resolve, 1500));
-//     console.log('Form data:', data);
-//     // toast({
-//     //   title: 'Message Sent!',
-//     //   description: "Thank you for reaching out. I'll get back to you soon!",
-//     // });
-//     reset();
-//     setIsSubmitting(false);
-//   };
-
-//   return (
-//     <section
-//       id="contact"
-//       className="py-32 bg-[#0a0a0a] relative overflow-hidden"
-//     >
-//       {/* Animated Background */}
-//       <div className="absolute inset-0">
-//         <motion.div
-//           animate={{
-//             scale: [1, 1.2, 1],
-//             rotate: [0, 90, 180, 270, 360],
-//           }}
-//           transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-//           className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[#DC143C] rounded-full blur-3xl opacity-15"
-//         />
-//         <motion.div
-//           animate={{
-//             scale: [1.2, 1, 1.2],
-//             rotate: [360, 270, 180, 90, 0],
-//           }}
-//           transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-//           className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#DC143C] rounded-full blur-3xl opacity-15"
-//         />
-
-//         {/* Floating particles */}
-//         {[...Array(20)].map((_, i) => (
-//           <motion.div
-//             key={i}
-//             className="absolute w-1 h-1 bg-[#DC143C] rounded-full"
-//             style={{
-//               top: `${Math.random() * 100}%`,
-//               left: `${Math.random() * 100}%`,
-//             }}
-//             animate={{
-//               y: [0, -30, 0],
-//               opacity: [0, 1, 0],
-//               scale: [0, 1.5, 0],
-//             }}
-//             transition={{
-//               duration: 3 + Math.random() * 2,
-//               repeat: Infinity,
-//               delay: Math.random() * 2,
-//             }}
-//           />
-//         ))}
-//       </div>
-
-//       <div
-//         ref={ref}
-//         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
-//       >
-//         {/* Section Title */}
-//         <motion.div
-//           initial={{ opacity: 0, y: 50 }}
-//           animate={inView ? { opacity: 1, y: 0 } : {}}
-//           transition={{ duration: 0.8 }}
-//           className="text-center mb-20"
-//         >
-//           <motion.div className="inline-block relative">
-//             <h2
-//               className="text-5xl sm:text-7xl font-bold text-white mb-6"
-//               style={{
-//                 fontFamily: "'Playfair Display', serif",
-//               }}
-//             >
-//               Get In{' '}
-//               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DC143C] to-[#FF1744] relative">
-//                 Touch
-//                 <motion.div
-//                   className="absolute -top-6 -right-10"
-//                   animate={{
-//                     rotate: [0, 360],
-//                     scale: [1, 1.3, 1],
-//                   }}
-//                   transition={{ duration: 3, repeat: Infinity }}
-//                 >
-//                   <Sparkles className="text-[#DC143C]" size={28} />
-//                 </motion.div>
-//               </span>
-//             </h2>
-//           </motion.div>
-//           <motion.div
-//             initial={{ scaleX: 0 }}
-//             animate={inView ? { scaleX: 1 } : {}}
-//             transition={{ delay: 0.5, duration: 0.8 }}
-//             className="w-32 h-1.5 bg-gradient-to-r from-[#DC143C] to-[#FF1744] mx-auto rounded-full mb-8"
-//             style={{ boxShadow: '0 0 20px rgba(220, 20, 60, 0.5)' }}
-//           />
-//           <motion.p
-//             initial={{ opacity: 0 }}
-//             animate={inView ? { opacity: 1 } : {}}
-//             transition={{ delay: 0.7 }}
-//             className="text-gray-400 text-xl max-w-2xl mx-auto"
-//           >
-//             Have a project in mind or want to collaborate? Let's connect!
-//           </motion.p>
-//         </motion.div>
-
-//         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-//           {/* Contact Info */}
-//           <motion.div
-//             initial={{ opacity: 0, x: -100 }}
-//             animate={inView ? { opacity: 1, x: 0 } : {}}
-//             transition={{ duration: 0.8, delay: 0.2 }}
-//             className="space-y-10"
-//           >
-//             <div>
-//               <motion.h3
-//                 className="text-3xl font-bold text-white mb-8 flex items-center gap-3"
-//                 whileHover={{ x: 10 }}
-//               >
-//                 <motion.div
-//                   animate={{ rotate: 360 }}
-//                   transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-//                   className="w-2 h-2 bg-[#DC143C] rounded-full"
-//                 />
-//                 Contact Information
-//               </motion.h3>
-
-//               <div className="space-y-6">
-//                 {/* Email */}
-//                 <ContactInfoCard
-//                   href={`mailto:${personalInfo.email}`}
-//                   icon={<Mail className="text-[#DC143C]" size={24} />}
-//                   label="Email"
-//                   value={personalInfo.email}
-//                   delay={0.3}
-//                   inView={inView}
-//                 />
-
-//                 {/* Phone */}
-//                 <ContactInfoCard
-//                   href={`tel:${personalInfo.phone}`}
-//                   icon={<Phone className="text-[#DC143C]" size={24} />}
-//                   label="Phone"
-//                   value={personalInfo.phone}
-//                   delay={0.4}
-//                   inView={inView}
-//                 />
-
-//                 {/* Location */}
-//                 <ContactInfoCard
-//                   icon={<MapPin className="text-[#DC143C]" size={24} />}
-//                   label="Location"
-//                   value={personalInfo.location}
-//                   delay={0.5}
-//                   inView={inView}
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Social Links */}
-//             <motion.div
-//               initial={{ opacity: 0, y: 30 }}
-//               animate={inView ? { opacity: 1, y: 0 } : {}}
-//               transition={{ delay: 0.6 }}
-//             >
-//               <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-//                 <motion.div
-//                   animate={{ scale: [1, 1.5, 1] }}
-//                   transition={{ duration: 2, repeat: Infinity }}
-//                   className="w-2 h-2 bg-[#DC143C] rounded-full"
-//                 />
-//                 Connect With Me
-//               </h3>
-//               <div className="flex gap-6">
-//                 <SocialButton
-//                   href={personalInfo.github}
-//                   icon={<Github size={24} />}
-//                   label="GitHub"
-//                   delay={0.7}
-//                 />
-//                 <SocialButton
-//                   href={personalInfo.linkedIn}
-//                   icon={<Linkedin size={24} />}
-//                   label="LinkedIn"
-//                   delay={0.8}
-//                 />
-//               </div>
-//             </motion.div>
-//           </motion.div>
-
-//           {/* Contact Form */}
-//           <motion.div
-//             initial={{ opacity: 0, x: 100 }}
-//             animate={inView ? { opacity: 1, x: 0 } : {}}
-//             transition={{ duration: 0.8, delay: 0.4 }}
-//           >
-//             <motion.form
-//               onSubmit={handleSubmit(onSubmit)}
-//               className="space-y-6 relative"
-//             >
-//               {/* Background glow */}
-//               <motion.div
-//                 className="absolute -inset-4 bg-gradient-to-r from-[#DC143C]/10 via-[#FF1744]/10 to-[#DC143C]/10 rounded-3xl blur-2xl"
-//                 animate={{
-//                   opacity: [0.3, 0.6, 0.3],
-//                 }}
-//                 transition={{ duration: 3, repeat: Infinity }}
-//               />
-
-//               <div className="relative">
-//                 {/* Name */}
-//                 <FormField
-//                   label="Your Name"
-//                   id="name"
-//                   type="text"
-//                   placeholder="John Doe"
-//                   register={register('name', { required: 'Name is required' })}
-//                   error={errors.name}
-//                   focusedField={focusedField}
-//                   setFocusedField={setFocusedField}
-//                 />
-
-//                 {/* Email */}
-//                 <FormField
-//                   label="Your Email"
-//                   id="email"
-//                   type="email"
-//                   placeholder="john@example.com"
-//                   register={register('email', {
-//                     required: 'Email is required',
-//                     pattern: {
-//                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-//                       message: 'Invalid email address',
-//                     },
-//                   })}
-//                   error={errors.email}
-//                   focusedField={focusedField}
-//                   setFocusedField={setFocusedField}
-//                 />
-
-//                 {/* Subject */}
-//                 <FormField
-//                   label="Subject"
-//                   id="subject"
-//                   type="text"
-//                   placeholder="Project Inquiry"
-//                   register={register('subject', { required: 'Subject is required' })}
-//                   error={errors.subject}
-//                   focusedField={focusedField}
-//                   setFocusedField={setFocusedField}
-//                 />
-
-//                 {/* Message */}
-//                 <div className="relative">
-//                   <label
-//                     htmlFor="message"
-//                     className="block text-white font-medium mb-3 flex items-center gap-2"
-//                   >
-//                     <motion.div
-//                       animate={{
-//                         rotate: focusedField === 'message' ? 360 : 0,
-//                       }}
-//                       className="w-1.5 h-1.5 bg-[#DC143C] rounded-full"
-//                     />
-//                     Message
-//                   </label>
-//                   <motion.textarea
-//                     {...register('message', { required: 'Message is required' })}
-//                     id="message"
-//                     rows={6}
-//                     placeholder="Tell me about your project..."
-//                     onFocus={() => setFocusedField('message')}
-//                     onBlur={() => setFocusedField(null)}
-//                     className="w-full px-6 py-4 bg-[#1a1a1a] border border-gray-800 rounded-2xl text-white focus:border-[#DC143C] focus:outline-none transition-all resize-none"
-//                     whileFocus={{
-//                       boxShadow: '0 0 30px rgba(220, 20, 60, 0.3)',
-//                       scale: 1.01,
-//                     }}
-//                   />
-//                   {errors.message && (
-//                     <motion.p
-//                       initial={{ opacity: 0, y: -10 }}
-//                       animate={{ opacity: 1, y: 0 }}
-//                       className="text-[#DC143C] text-sm mt-2 flex items-center gap-2"
-//                     >
-//                       <span className="w-1 h-1 bg-[#DC143C] rounded-full" />
-//                       {errors.message.message}
-//                     </motion.p>
-//                   )}
-//                 </div>
-
-//                 {/* Submit Button */}
-//                 <motion.button
-//                   type="submit"
-//                   disabled={isSubmitting}
-//                   whileHover={{ scale: 1.02 }}
-//                   whileTap={{ scale: 0.98 }}
-//                   className="w-full relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
-//                 >
-//                   <motion.div
-//                     className="absolute inset-0 bg-gradient-to-r from-[#DC143C] via-[#FF1744] to-[#DC143C]"
-//                     animate={{
-//                       backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-//                     }}
-//                     transition={{ duration: 3, repeat: Infinity }}
-//                     style={{ backgroundSize: '200% 200%' }}
-//                   />
-//                   <div className="relative px-8 py-5 rounded-2xl flex items-center justify-center gap-3 text-white font-semibold text-lg">
-//                     {isSubmitting ? (
-//                       <>
-//                         <motion.div
-//                           animate={{ rotate: 360 }}
-//                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-//                           className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-//                         />
-//                         <span>Sending...</span>
-//                       </>
-//                     ) : (
-//                       <>
-//                         <motion.div
-//                           whileHover={{ x: 5 }}
-//                           transition={{ type: 'spring', stiffness: 400 }}
-//                         >
-//                           <Send size={20} />
-//                         </motion.div>
-//                         <span>Send Message</span>
-//                       </>
-//                     )}
-//                   </div>
-
-//                   {/* Button glow effect */}
-//                   <motion.div
-//                     className="absolute inset-0 bg-white rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"
-//                     style={{
-//                       boxShadow: '0 0 40px rgba(220, 20, 60, 0.8)',
-//                     }}
-//                   />
-//                 </motion.button>
-//               </div>
-//             </motion.form>
-//           </motion.div>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
-
-// // Contact Info Card Component
-// const ContactInfoCard = ({ href, icon, label, value, delay, inView }) => {
-//   const [isHovered, setIsHovered] = useState(false);
-
-//   const card = (
-//     <motion.div
-//       initial={{ opacity: 0, x: -50 }}
-//       animate={inView ? { opacity: 1, x: 0 } : {}}
-//       transition={{ delay, type: 'spring' }}
-//       onMouseEnter={() => setIsHovered(true)}
-//       onMouseLeave={() => setIsHovered(false)}
-//       whileHover={{ scale: 1.03, x: 15 }}
-//       className="relative flex items-center gap-5 p-6 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-2xl border border-gray-800 hover:border-[#DC143C] transition-all group overflow-hidden"
-//     >
-//       {/* Background glow */}
-//       <motion.div
-//         className="absolute top-0 right-0 w-32 h-32 bg-[#DC143C]/20 rounded-full blur-3xl"
-//         animate={{
-//           scale: isHovered ? 1.5 : 1,
-//           opacity: isHovered ? 0.4 : 0.2,
-//         }}
-//       />
-
-//       <motion.div
-//         className="p-4 bg-gradient-to-br from-[#DC143C]/20 to-[#DC143C]/5 rounded-xl relative z-10"
-//         whileHover={{ rotate: 360, scale: 1.1 }}
-//         transition={{ duration: 0.6 }}
-//       >
-//         {icon}
-//       </motion.div>
-//       <div className="relative z-10">
-//         <div className="text-gray-400 text-sm font-medium mb-1">{label}</div>
-//         <div className="text-white font-semibold text-lg">{value}</div>
-//       </div>
-
-//       {/* Animated shine effect */}
-//       <motion.div
-//         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-//         initial={{ x: '-100%' }}
-//         whileHover={{ x: '100%' }}
-//         transition={{ duration: 0.8 }}
-//         style={{
-//           background:
-//             'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-//         }}
-//       />
-//     </motion.div>
-//   );
-
-//   return href ? (
-//     <a href={href} className="block">
-//       {card}
-//     </a>
-//   ) : (
-//     card
-//   );
-// };
-
-// // Social Button Component
-// const SocialButton = ({ href, icon, label, delay }) => {
-//   return (
-//     <motion.a
-//       href={href}
-//       target="_blank"
-//       rel="noopener noreferrer"
-//       initial={{ opacity: 0, scale: 0 }}
-//       animate={{ opacity: 1, scale: 1 }}
-//       transition={{ delay, type: 'spring', bounce: 0.6 }}
-//       whileHover={{ scale: 1.15, y: -5, rotate: 5 }}
-//       whileTap={{ scale: 0.9 }}
-//       className="relative p-5 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-2xl border border-gray-800 hover:border-[#DC143C] transition-all group overflow-hidden"
-//     >
-//       {/* Background glow */}
-//       <motion.div
-//         className="absolute inset-0 bg-[#DC143C]/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"
-//         whileHover={{ scale: 1.2 }}
-//       />
-//       <div className="relative z-10 text-gray-400 group-hover:text-[#DC143C] transition-colors">
-//         {icon}
-//       </div>
-
-//       {/* Tooltip */}
-//       <motion.span
-//         className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-[#DC143C] text-white px-4 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-//         initial={{ y: 10 }}
-//         whileHover={{ y: 0 }}
-//       >
-//         {label}
-//       </motion.span>
-//     </motion.a>
-//   );
-// };
-
-// // Form Field Component
-// const FormField = ({
-//   label,
-//   id,
-//   type,
-//   placeholder,
-//   register,
-//   error,
-//   focusedField,
-//   setFocusedField,
-// }) => {
-//   return (
-//     <div className="mb-6">
-//       <label
-//         htmlFor={id}
-//         className="block text-white font-medium mb-3 flex items-center gap-2"
-//       >
-//         <motion.div
-//           animate={{
-//             rotate: focusedField === id ? 360 : 0,
-//           }}
-//           className="w-1.5 h-1.5 bg-[#DC143C] rounded-full"
-//         />
-//         {label}
-//       </label>
-//       <motion.input
-//         {...register}
-//         type={type}
-//         id={id}
-//         placeholder={placeholder}
-//         onFocus={() => setFocusedField(id)}
-//         onBlur={() => setFocusedField(null)}
-//         className="w-full px-6 py-4 bg-[#1a1a1a] border border-gray-800 rounded-2xl text-white focus:border-[#DC143C] focus:outline-none transition-all"
-//         whileFocus={{
-//           boxShadow: '0 0 30px rgba(220, 20, 60, 0.3)',
-//           scale: 1.01,
-//         }}
-//       />
-//       {error && (
-//         <motion.p
-//           initial={{ opacity: 0, y: -10 }}
-//           animate={{ opacity: 1, y: 0 }}
-//           className="text-[#DC143C] text-sm mt-2 flex items-center gap-2"
-//         >
-//           <span className="w-1 h-1 bg-[#DC143C] rounded-full" />
-//           {error.message}
-//         </motion.p>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Contact;

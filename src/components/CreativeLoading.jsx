@@ -1,309 +1,62 @@
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import { motion, AnimatePresence } from 'framer-motion';
-// import { Code, Terminal, Cpu } from 'lucide-react';
-
-// const CreativeLoadingPage = ({ onLoadingComplete }) => {
-//   const [stage, setStage] = useState(0);
-//   const [isComplete, setIsComplete] = useState(false);
-
-//   const stages = [
-//     { icon: Code, text: 'Compiling Code', color: '#DC143C' },
-//     { icon: Terminal, text: 'Executing Scripts', color: '#FF1744' },
-//     { icon: Cpu, text: 'Optimizing', color: '#DC143C' },
-//   ];
-
-//   useEffect(() => {
-//     const stageTimer = setInterval(() => {
-//       setStage((prev) => {
-//         if (prev < stages.length - 1) {
-//           return prev + 1;
-//         }
-//         clearInterval(stageTimer);
-//         setTimeout(() => {
-//           setIsComplete(true);
-//           setTimeout(() => {
-//             onLoadingComplete?.();
-//           }, 600);
-//         }, 600);
-//         return prev;
-//       });
-//     }, 800); // Reduced from 1000ms
-
-//     return () => clearInterval(stageTimer);
-//   }, [onLoadingComplete, stages.length]);
-
-//   return (
-//     <AnimatePresence>
-//       {!isComplete && (
-//         <motion.div
-//           initial={{ opacity: 1 }}
-//           exit={{ 
-//             opacity: 0,
-//             scale: 1.3,
-//             filter: 'blur(8px)'
-//           }}
-//           transition={{ duration: 0.6 }}
-//           className="fixed inset-0 z-[9999] bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#1a0a0a] flex items-center justify-center overflow-hidden"
-//         >
-//           {/* Reduced DNA Helix - Only 6 elements instead of 12 */}
-//           <div className="absolute inset-0">
-//             {[...Array(6)].map((_, i) => (
-//               <motion.div
-//                 key={i}
-//                 className="absolute left-1/2 w-1 bg-gradient-to-b from-[#DC143C] to-transparent"
-//                 style={{
-//                   height: '200px',
-//                   transformOrigin: 'center',
-//                   willChange: 'transform',
-//                 }}
-//                 animate={{
-//                   rotateY: [i * 60, i * 60 + 360],
-//                   opacity: [0.15, 0.4, 0.15],
-//                 }}
-//                 transition={{
-//                   duration: 5,
-//                   repeat: Infinity,
-//                   ease: 'linear',
-//                   delay: i * 0.2,
-//                 }}
-//               />
-//             ))}
-//           </div>
-
-//           {/* Simplified Hexagon Grid - Reduced opacity */}
-//           <div className="absolute inset-0 opacity-3">
-//             <svg width="100%" height="100%">
-//               <defs>
-//                 <pattern id="hexagons" x="0" y="0" width="100" height="87" patternUnits="userSpaceOnUse">
-//                   <polygon
-//                     points="50,0 100,25 100,62 50,87 0,62 0,25"
-//                     fill="none"
-//                     stroke="#DC143C"
-//                     strokeWidth="1"
-//                   />
-//                 </pattern>
-//               </defs>
-//               <rect width="100%" height="100%" fill="url(#hexagons)" />
-//             </svg>
-//           </div>
-
-//           <div className="relative z-10 flex flex-col items-center space-y-12">
-//             {/* Central Loading Icon */}
-//             <div className="relative" style={{ willChange: 'transform' }}>
-//               {/* Simplified rings - only 2 instead of 3 */}
-//               <motion.div
-//                 className="absolute -inset-12 border border-[#DC143C]/30 rounded-full"
-//                 animate={{ rotate: 360 }}
-//                 transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-//                 style={{ willChange: 'transform' }}
-//               />
-
-//               <motion.div
-//                 className="absolute -inset-8 border-2 border-[#DC143C]/50 rounded-full"
-//                 animate={{ rotate: -360 }}
-//                 transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-//                 style={{ willChange: 'transform' }}
-//               />
-
-//               {/* Center icon container */}
-//               <motion.div
-//                 className="relative w-32 h-32 bg-gradient-to-br from-[#DC143C] to-[#8B0000] rounded-full flex items-center justify-center"
-//                 animate={{
-//                   boxShadow: [
-//                     '0 0 30px rgba(220, 20, 60, 0.5)',
-//                     '0 0 50px rgba(220, 20, 60, 0.8)',
-//                     '0 0 30px rgba(220, 20, 60, 0.5)',
-//                   ],
-//                 }}
-//                 transition={{ duration: 2.5, repeat: Infinity }}
-//                 style={{ willChange: 'box-shadow' }}
-//               >
-//                 <AnimatePresence mode="wait">
-//                   <motion.div
-//                     key={stage}
-//                     initial={{ scale: 0, rotate: -120 }}
-//                     animate={{ scale: 1, rotate: 0 }}
-//                     exit={{ scale: 0, rotate: 120 }}
-//                     transition={{ duration: 0.4 }}
-//                   >
-//                     {React.createElement(stages[stage].icon, {
-//                       className: 'text-white',
-//                       size: 48,
-//                     })}
-//                   </motion.div>
-//                 </AnimatePresence>
-//               </motion.div>
-
-//               {/* Reduced orbiting particles - 4 instead of 8 */}
-//               {[...Array(4)].map((_, i) => (
-//                 <motion.div
-//                   key={i}
-//                   className="absolute w-2 h-2 bg-[#DC143C] rounded-full"
-//                   style={{
-//                     top: '50%',
-//                     left: '50%',
-//                   }}
-//                   animate={{
-//                     x: [0, Math.cos((i * Math.PI * 2) / 4) * 80],
-//                     y: [0, Math.sin((i * Math.PI * 2) / 4) * 80],
-//                     scale: [0, 1, 0],
-//                     opacity: [0, 1, 0],
-//                   }}
-//                   transition={{
-//                     duration: 2,
-//                     repeat: Infinity,
-//                     delay: i * 0.5,
-//                   }}
-//                 />
-//               ))}
-//             </div>
-
-//             {/* Stage Text */}
-//             <div className="text-center space-y-4">
-//               <AnimatePresence mode="wait">
-//                 <motion.div
-//                   key={stage}
-//                   initial={{ opacity: 0, y: 20 }}
-//                   animate={{ opacity: 1, y: 0 }}
-//                   exit={{ opacity: 0, y: -20 }}
-//                   transition={{ duration: 0.4 }}
-//                   className="space-y-2"
-//                 >
-//                   <h2
-//                     className="text-3xl font-bold text-white"
-//                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-//                   >
-//                     {stages[stage].text}
-//                   </h2>
-                  
-//                   {/* Animated dots */}
-//                   <div className="flex justify-center gap-1">
-//                     {[...Array(3)].map((_, i) => (
-//                       <motion.div
-//                         key={i}
-//                         className="w-2 h-2 bg-[#DC143C] rounded-full"
-//                         animate={{
-//                           scale: [1, 1.3, 1],
-//                           opacity: [0.3, 1, 0.3],
-//                         }}
-//                         transition={{
-//                           duration: 1.5,
-//                           repeat: Infinity,
-//                           delay: i * 0.2,
-//                         }}
-//                       />
-//                     ))}
-//                   </div>
-//                 </motion.div>
-//               </AnimatePresence>
-//             </div>
-
-//             {/* Progress Bar */}
-//             <div className="w-96">
-//               <div className="relative h-1.5 bg-gray-800/50 rounded-full overflow-hidden">
-//                 <motion.div
-//                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#DC143C] via-[#FF1744] to-[#DC143C]"
-//                   initial={{ width: '0%' }}
-//                   animate={{ 
-//                     width: `${((stage + 1) / stages.length) * 100}%`,
-//                   }}
-//                   transition={{ duration: 0.6, ease: 'easeOut' }}
-//                   style={{
-//                     boxShadow: '0 0 15px rgba(220, 20, 60, 0.6)',
-//                   }}
-//                 >
-//                   {/* Shimmer */}
-//                   <motion.div
-//                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-//                     animate={{ x: ['-100%', '200%'] }}
-//                     transition={{ duration: 1.5, repeat: Infinity }}
-//                   />
-//                 </motion.div>
-//               </div>
-
-//               {/* Stage indicators */}
-//               <div className="flex justify-between mt-4">
-//                 {stages.map((s, i) => (
-//                   <motion.div
-//                     key={i}
-//                     className={`text-xs ${
-//                       i <= stage ? 'text-[#DC143C]' : 'text-gray-600'
-//                     }`}
-//                     initial={{ opacity: 0, y: -10 }}
-//                     animate={{ opacity: 1, y: 0 }}
-//                     transition={{ delay: i * 0.2 }}
-//                   >
-//                     {s.text}
-//                   </motion.div>
-//                 ))}
-//               </div>
-//             </div>
-
-//             {/* Reduced binary rain - 10 instead of 20 */}
-//             <motion.div
-//               className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 opacity-15 font-mono text-[#DC143C] text-xs overflow-hidden"
-//               style={{ height: '60px' }}
-//             >
-//               {[...Array(10)].map((_, i) => (
-//                 <motion.div
-//                   key={i}
-//                   animate={{
-//                     y: ['-100%', '200%'],
-//                   }}
-//                   transition={{
-//                     duration: 2 + Math.random() * 2,
-//                     repeat: Infinity,
-//                     delay: Math.random() * 2,
-//                   }}
-//                 >
-//                   {Math.random() > 0.5 ? '1' : '0'}
-//                 </motion.div>
-//               ))}
-//             </motion.div>
-//           </div>
-//         </motion.div>
-//       )}
-//     </AnimatePresence>
-//   );
-// };
-
-// export default CreativeLoadingPage;
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code, Terminal, Cpu } from 'lucide-react';
 
+/* ── All random values pre-computed at module level ──────────────────────────
+   This ensures server & client render identically (no hydration mismatch).   */
+
+// 8 orbiting particle angles around the central logo
+const ORBIT_PARTICLES = Array.from({ length: 8 }, (_, i) => ({
+  x: Math.cos((i * Math.PI * 2) / 8) * 72,
+  y: Math.sin((i * Math.PI * 2) / 8) * 72,
+  delay: i * 0.25,
+}));
+
+// 16 binary rain columns — fixed values, no Math.random in render
+const RAIN_COLS = [
+  { bit: '1', dur: 2.4, delay: 0.0  },
+  { bit: '0', dur: 3.1, delay: 0.3  },
+  { bit: '1', dur: 2.7, delay: 0.6  },
+  { bit: '0', dur: 3.5, delay: 0.1  },
+  { bit: '1', dur: 2.2, delay: 0.9  },
+  { bit: '0', dur: 3.8, delay: 0.4  },
+  { bit: '1', dur: 2.6, delay: 0.7  },
+  { bit: '0', dur: 3.0, delay: 0.2  },
+  { bit: '1', dur: 2.9, delay: 1.0  },
+  { bit: '0', dur: 2.3, delay: 0.5  },
+  { bit: '1', dur: 3.4, delay: 0.8  },
+  { bit: '0', dur: 2.8, delay: 0.15 },
+  { bit: '1', dur: 3.6, delay: 1.1  },
+  { bit: '0', dur: 2.5, delay: 0.45 },
+  { bit: '1', dur: 3.2, delay: 0.75 },
+  { bit: '0', dur: 2.1, delay: 1.2  },
+];
+
+const STAGES = [
+  { icon: Code,     text: 'Compiling Code'    },
+  { icon: Terminal, text: 'Executing Scripts' },
+  { icon: Cpu,      text: 'Optimizing'        },
+];
+
 const CreativeLoadingPage = ({ onLoadingComplete }) => {
-  const [stage, setStage] = useState(0);
+  const [stage, setStage]         = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
-  const stages = [
-    { icon: Code, text: 'Compiling Code', color: '#DC143C' },
-    { icon: Terminal, text: 'Executing Scripts', color: '#FF1744' },
-    { icon: Cpu, text: 'Optimizing', color: '#DC143C' },
-  ];
-
   useEffect(() => {
-    const stageTimer = setInterval(() => {
+    const id = setInterval(() => {
       setStage((prev) => {
-        if (prev < stages.length - 1) {
-          return prev + 1;
-        }
-        clearInterval(stageTimer);
+        if (prev < STAGES.length - 1) return prev + 1;
+        clearInterval(id);
         setTimeout(() => {
           setIsComplete(true);
-          setTimeout(() => {
-            onLoadingComplete?.();
-          }, 800);
-        }, 800);
+          setTimeout(() => onLoadingComplete?.(), 700);
+        }, 700);
         return prev;
       });
     }, 1000);
-
-    return () => clearInterval(stageTimer);
+    return () => clearInterval(id);
   }, [onLoadingComplete]);
 
   return (
@@ -311,89 +64,39 @@ const CreativeLoadingPage = ({ onLoadingComplete }) => {
       {!isComplete && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ 
-            opacity: 0,
-            scale: 1.5,
-            filter: 'blur(10px)'
-          }}
-          transition={{ duration: 0.8 }}
-          className="fixed inset-0 z-[9999] bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#1a0a0a] flex items-center justify-center overflow-hidden"
+          exit={{ opacity: 0, scale: 1.08 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[9999] bg-[#0a0a0a] flex items-center justify-center overflow-hidden"
         >
-          {/* DNA Helix Background Animation */}
-          <div className="absolute inset-0">
-            {[...Array(12)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute left-1/2 w-1 bg-gradient-to-b from-[#DC143C] to-transparent"
-                style={{
-                  height: '200px',
-                  transformOrigin: 'center',
-                }}
-                animate={{
-                  rotateY: [i * 30, i * 30 + 360],
-                  opacity: [0.2, 0.5, 0.2],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: 'linear',
-                  delay: i * 0.1,
-                }}
-              />
-            ))}
-          </div>
+          {/* CSS background blobs */}
+          <div className="blob-a absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-[#DC143C]/12 blur-3xl" />
+          <div className="blob-b absolute bottom-1/4 left-1/4 w-80 h-80 rounded-full bg-[#8B0000]/12 blur-3xl" />
 
-          {/* Hexagon Grid */}
-          <div className="absolute inset-0 opacity-5">
+          {/* Hexagon grid — static SVG, no animation */}
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
             <svg width="100%" height="100%">
               <defs>
-                <pattern id="hexagons" x="0" y="0" width="100" height="87" patternUnits="userSpaceOnUse">
-                  <polygon
-                    points="50,0 100,25 100,62 50,87 0,62 0,25"
-                    fill="none"
-                    stroke="#DC143C"
-                    strokeWidth="1"
-                  />
+                <pattern id="hex" x="0" y="0" width="100" height="87" patternUnits="userSpaceOnUse">
+                  <polygon points="50,0 100,25 100,62 50,87 0,62 0,25" fill="none" stroke="#DC143C" strokeWidth="1" />
                 </pattern>
               </defs>
-              <rect width="100%" height="100%" fill="url(#hexagons)" />
+              <rect width="100%" height="100%" fill="url(#hex)" />
             </svg>
           </div>
 
-          <div className="relative z-10 flex flex-col items-center space-y-12">
-            {/* Central Loading Icon */}
-            <div className="relative">
-              {/* Outer rotating ring */}
-              <motion.div
-                className="absolute -inset-16 border border-[#DC143C]/30 rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-              />
-              
-              {/* Middle ring */}
-              <motion.div
-                className="absolute -inset-12 border-2 border-[#DC143C]/50 rounded-full"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-              />
+          <div className="relative z-10 flex flex-col items-center space-y-10 px-6">
 
-              {/* Inner ring */}
-              <motion.div
-                className="absolute -inset-8 border-2 border-[#DC143C]/70 rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-              />
+            {/* ── Central logo + rings ── */}
+            <div className="relative flex items-center justify-center">
+              {/* CSS-spun rings */}
+              <div className="spin-cw  absolute w-[220px] h-[220px] rounded-full border   border-[#DC143C]/25" />
+              <div className="spin-ccw absolute w-[180px] h-[180px] rounded-full border-2 border-[#DC143C]/40" />
+              <div className="spin-cw  absolute w-[140px] h-[140px] rounded-full border-2 border-[#DC143C]/60" />
 
-              {/* Center icon container */}
+              {/* Logo circle */}
               <motion.div
-                className="relative w-32 h-32 bg-gradient-to-br from-[#DC143C] to-[#8B0000] rounded-full flex items-center justify-center"
-                animate={{
-                  boxShadow: [
-                    '0 0 30px rgba(220, 20, 60, 0.6)',
-                    '0 0 60px rgba(220, 20, 60, 1)',
-                    '0 0 30px rgba(220, 20, 60, 0.6)',
-                  ],
-                }}
+                className="relative w-28 h-28 rounded-full bg-gradient-to-br from-[#DC143C] to-[#8B0000] flex items-center justify-center"
+                animate={{ boxShadow: ['0 0 25px rgba(220,20,60,0.5)', '0 0 55px rgba(220,20,60,0.85)', '0 0 25px rgba(220,20,60,0.5)'] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 <AnimatePresence mode="wait">
@@ -402,142 +105,79 @@ const CreativeLoadingPage = ({ onLoadingComplete }) => {
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: 180 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.4 }}
                   >
-                    {React.createElement(stages[stage].icon, {
-                      className: 'text-white',
-                      size: 48,
-                    })}
+                    {React.createElement(STAGES[stage].icon, { className: 'text-white', size: 44 })}
                   </motion.div>
                 </AnimatePresence>
               </motion.div>
 
-              {/* Orbiting particles */}
-              {[...Array(8)].map((_, i) => (
+              {/* Ping pulse */}
+              <div className="absolute w-28 h-28 rounded-full bg-[#DC143C]/20 animate-ping" />
+
+              {/* Orbiting dots — pre-computed positions, no Math.random */}
+              {ORBIT_PARTICLES.map((p, i) => (
                 <motion.div
                   key={i}
                   className="absolute w-2 h-2 bg-[#DC143C] rounded-full"
-                  style={{
-                    top: '50%',
-                    left: '50%',
-                  }}
-                  animate={{
-                    x: [0, Math.cos((i * Math.PI * 2) / 8) * 80],
-                    y: [0, Math.sin((i * Math.PI * 2) / 8) * 80],
-                    scale: [0, 1, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.25,
-                  }}
+                  style={{ top: '50%', left: '50%', marginTop: -4, marginLeft: -4 }}
+                  animate={{ x: [0, p.x, 0], y: [0, p.y, 0], scale: [0, 1, 0], opacity: [0, 1, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: p.delay }}
                 />
               ))}
             </div>
 
-            {/* Stage Text */}
-            <div className="text-center space-y-4">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={stage}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                  className="space-y-2"
-                >
-                  <h2
-                    className="text-3xl font-bold text-white"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                  >
-                    {stages[stage].text}
-                  </h2>
-                  
-                  {/* Animated dots */}
-                  <div className="flex justify-center gap-1">
-                    {[...Array(3)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2 h-2 bg-[#DC143C] rounded-full"
-                        animate={{
-                          scale: [1, 1.5, 1],
-                          opacity: [0.3, 1, 0.3],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: i * 0.2,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+            {/* Stage text */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={stage}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35 }}
+                className="text-center space-y-3"
+              >
+                <h2 className="text-3xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  {STAGES[stage].text}
+                </h2>
+                <div className="flex justify-center gap-2">
+                  <span className="w-2 h-2 bg-[#DC143C] rounded-full dot-1" />
+                  <span className="w-2 h-2 bg-[#DC143C] rounded-full dot-2" />
+                  <span className="w-2 h-2 bg-[#DC143C] rounded-full dot-3" />
+                </div>
+              </motion.div>
+            </AnimatePresence>
 
-            {/* Progress Bar */}
-            <div className="w-96">
-              <div className="relative h-1.5 bg-gray-800/50 rounded-full overflow-hidden">
-                <motion.div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#DC143C] via-[#FF1744] to-[#DC143C]"
-                  initial={{ width: '0%' }}
-                  animate={{ 
-                    width: `${((stage + 1) / stages.length) * 100}%`,
-                  }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                  style={{
-                    boxShadow: '0 0 15px rgba(220, 20, 60, 0.8)',
-                  }}
-                >
-                  {/* Shimmer */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                </motion.div>
-              </div>
-
-              {/* Stage indicators */}
-              <div className="flex justify-between mt-4">
-                {stages.map((s, i) => (
-                  <motion.div
-                    key={i}
-                    className={`text-xs ${
-                      i <= stage ? 'text-[#DC143C]' : 'text-gray-600'
-                    }`}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.3 }}
-                  >
-                    {s.text}
-                  </motion.div>
+            {/* Progress bar */}
+            <div className="w-80 space-y-1">
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                {STAGES.map((s, i) => (
+                  <span key={i} className={i <= stage ? 'text-[#DC143C] font-medium' : ''}>{s.text}</span>
                 ))}
               </div>
+              <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-[#DC143C] to-[#FF1744] rounded-full shimmer-bar"
+                  animate={{ width: `${((stage + 1) / STAGES.length) * 100}%` }}
+                  transition={{ duration: 0.7, ease: 'easeOut' }}
+                  style={{ boxShadow: '0 0 12px rgba(220,20,60,0.6)' }}
+                />
+              </div>
             </div>
 
-            {/* Binary rain effect */}
-            <motion.div
-              className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 opacity-20 font-mono text-[#DC143C] text-xs overflow-hidden"
-              style={{ height: '60px' }}
-            >
-              {[...Array(20)].map((_, i) => (
-                <motion.div
+            {/* Binary rain — pre-computed, no Math.random in render */}
+            <div className="flex gap-3 opacity-20 font-mono text-[#DC143C] text-xs overflow-hidden h-12">
+              {RAIN_COLS.map((col, i) => (
+                <motion.span
                   key={i}
-                  animate={{
-                    y: ['-100%', '200%'],
-                  }}
-                  transition={{
-                    duration: 2 + Math.random() * 2,
-                    repeat: Infinity,
-                    delay: Math.random() * 2,
-                  }}
+                  animate={{ y: ['-100%', '200%'] }}
+                  transition={{ duration: col.dur, repeat: Infinity, delay: col.delay, ease: 'linear' }}
                 >
-                  {Math.random() > 0.5 ? '1' : '0'}
-                </motion.div>
+                  {col.bit}
+                </motion.span>
               ))}
-            </motion.div>
+            </div>
+
           </div>
         </motion.div>
       )}
